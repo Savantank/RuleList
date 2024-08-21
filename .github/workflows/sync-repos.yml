@@ -1,0 +1,59 @@
+name: Sync Repositories
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天运行一次
+  workflow_dispatch: # 手动触发
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-repos:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout target repository
+      uses: actions/checkout@v2
+      with:
+        repository: Savantank/RuleList
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout ios_rule_script repository
+      uses: actions/checkout@v2
+      with:
+        repository: blackmatrix7/ios_rule_script
+        path: temp_ios_rule_script
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout ProxyResource repository
+      uses: actions/checkout@v2
+      with:
+        repository: luestr/ProxyResource
+        path: temp_ProxyResource
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Sync ios_rule_script to target folder
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        rm -rf ios_rule_script
+        mkdir -p ios_rule_script
+        cp -r temp_ios_rule_script/* ios_rule_script/
+        git add ios_rule_script
+        git commit -m 'Sync ios_rule_script'
+
+    - name: Sync ProxyResource to target folder
+      run: |
+        rm -rf ProxyResource
+        mkdir -p ProxyResource
+        cp -r temp_ProxyResource/* ProxyResource/
+        git add ProxyResource
+        git commit -m 'Sync ProxyResource'
+
+    - name: Push changes
+      run: |
+        git push
