@@ -36,23 +36,55 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
-    - name: Sync ios_rule_script to target folder
+    - name: Checkout ddgksf2013 repository
+      uses: actions/checkout@v2
+      with:
+        repository: ddgksf2013/ddgksf2013
+        path: temp_ddgksf2013
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Orz-3 repository
+      uses: actions/checkout@v2
+      with:
+        repository: Orz-3/mini
+        path: temp_Orz3_mini
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Sync ios_rule_script to bm7 folder
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
-        rm -rf ios_rule_script
-        mkdir -p ios_rule_script
-        cp -r temp_ios_rule_script/* ios_rule_script/
-        git add ios_rule_script
-        git commit -m 'Sync ios_rule_script'
+        rm -rf bm7
+        mkdir -p bm7
+        cp -r temp_ios_rule_script/* bm7/
+        git add bm7
+        git commit -m 'Sync ios_rule_script to bm7 folder'
 
-    - name: Sync ProxyResource to target folder
+    - name: Sync ProxyResource to iKeLee folder
       run: |
-        rm -rf ProxyResource
-        mkdir -p ProxyResource
-        cp -r temp_ProxyResource/* ProxyResource/
-        git add ProxyResource
-        git commit -m 'Sync ProxyResource'
+        rm -rf iKeLee
+        mkdir -p iKeLee
+        cp -r temp_ProxyResource/* iKeLee/
+        git add iKeLee
+        git commit -m 'Sync ProxyResource to iKeLee folder'
+
+    - name: Sync ddgksf2013 to 墨鱼配置 folder
+      run: |
+        rm -rf 墨鱼配置
+        mkdir -p 墨鱼配置
+        cp -r temp_ddgksf2013/* 墨鱼配置/
+        git add 墨鱼配置
+        git commit -m 'Sync ddgksf2013 to 墨鱼配置 folder'
+
+    - name: Sync Orz-3 mini to 小白图标 folder
+      run: |
+        rm -rf 小白图标
+        mkdir -p 小白图标
+        cp -r temp_Orz3_mini/* 小白图标/
+        git add 小白图标
+        git commit -m 'Sync Orz-3 mini to 小白图标 folder'
 
     - name: Push changes
       run: |
