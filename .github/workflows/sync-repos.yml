@@ -176,10 +176,10 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
-    - name: Checkout uniarisan repository
+    - name: Checkout uniartisan repository
       uses: actions/checkout@v2
       with:
-        repository: uniarisan/adblock_list
+        repository: uniartisan/adblock_list
         path: temp_adblock_list
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
@@ -346,13 +346,13 @@ jobs:
         git add AdRules
         git commit -m 'Sync Cats-Team to AdRules folder' || echo "No changes to commit"
 
-    - name: Sync uniarisan to adblock_list folder
+    - name: Sync uniartisan to adblock_list folder
       run: |
         rm -rf adblock_list
         mkdir -p adblock_list
         cp -r temp_adblock_list/* adblock_list/
         git add adblock_list
-        git commit -m 'Sync uniarisan to adblock_list folder' || echo "No changes to commit"
+        git commit -m 'Sync uniartisan to adblock_list folder' || echo "No changes to commit"
 
     - name: Sync limbopro to 毒奶去广告 folder
       run: |
