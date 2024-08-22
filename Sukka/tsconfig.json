@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["ESNext"],
+    "moduleDetection": "force",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./Source/**/*.js",
+    "./Build/**/*.ts",
+    "Source/**/*.ts"
+  ]
+}
