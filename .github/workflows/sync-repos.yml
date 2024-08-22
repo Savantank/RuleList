@@ -22,10 +22,7 @@ jobs:
 
     - name: Clean up temporary directories
       run: |
-        rm -rf temp_ios_rule_script
-        rm -rf temp_ProxyResource
-        rm -rf temp_ddgksf2013
-        rm -rf temp_Orz3_mini
+        rm -rf temp_*
 
     - name: Checkout ios_rule_script repository
       uses: actions/checkout@v2
@@ -56,6 +53,142 @@ jobs:
       with:
         repository: Orz-3/mini
         path: temp_Orz3_mini
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout SukkaW repository
+      uses: actions/checkout@v2
+      with:
+        repository: SukkaW/Surge
+        path: temp_Sukka
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout cc63 repository
+      uses: actions/checkout@v2
+      with:
+        repository: cc63/Surge
+        path: temp_Surge模块
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout VirgilClyne repository
+      uses: actions/checkout@v2
+      with:
+        repository: VirgilClyne/iRingo
+        path: temp_Apple解锁
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Yuu518 repository
+      uses: actions/checkout@v2
+      with:
+        repository: Yuu518/sing-box-rules
+        path: temp_sing-box-rules
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Peng-YM repository
+      uses: actions/checkout@v2
+      with:
+        repository: Peng-YM/Loon-Gallery
+        path: temp_Loon-Gallery
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Masaiki repository
+      uses: actions/checkout@v2
+      with:
+        repository: Masaiki/GeoIP2-CN
+        path: temp_GeoIP2-CN
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Moli-X repository
+      uses: actions/checkout@v2
+      with:
+        repository: Moli-X/Resources
+        path: temp_Moli-X
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout NobyDa repository
+      uses: actions/checkout@v2
+      with:
+        repository: NobyDa/Script
+        path: temp_NobyDa
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout zqzess repository
+      uses: actions/checkout@v2
+      with:
+        repository: zqzess/rule_for_quantumultX
+        path: temp_rule_for_quantumultX
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout deezertidal repository
+      uses: actions/checkout@v2
+      with:
+        repository: deezertidal/QuantumultX-Rewrite
+        path: temp_QuantumultX-Rewrite
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout app2smile repository
+      uses: actions/checkout@v2
+      with:
+        repository: app2smile/rules
+        path: temp_app2smile
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Loyalsoldier repository
+      uses: actions/checkout@v2
+      with:
+        repository: Loyalsoldier/clash-rules
+        path: temp_clash-rules
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Johnshall repository
+      uses: actions/checkout@v2
+      with:
+        repository: Johnshall/Shadowrocket-ADBlock-Rules-Forever
+        path: temp_Shadowrocket-ADBlock-Rules-Forever
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout neodevpro repository
+      uses: actions/checkout@v2
+      with:
+        repository: neodevpro/neodevhost
+        path: temp_neodevhost
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout Cats-Team repository
+      uses: actions/checkout@v2
+      with:
+        repository: Cats-Team/AdRules
+        path: temp_AdRules
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout uniarisan repository
+      uses: actions/checkout@v2
+      with:
+        repository: uniarisan/adblock_list
+        path: temp_adblock_list
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Checkout limbopro repository
+      uses: actions/checkout@v2
+      with:
+        repository: limbopro/Adblock4limbo
+        path: temp_毒奶去广告
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
@@ -92,6 +225,142 @@ jobs:
         cp -r temp_Orz3_mini/* 小白图标/
         git add 小白图标
         git commit -m 'Sync Orz-3 mini to 小白图标 folder' || echo "No changes to commit"
+
+    - name: Sync SukkaW to Sukka folder
+      run: |
+        rm -rf Sukka
+        mkdir -p Sukka
+        cp -r temp_Sukka/* Sukka/
+        git add Sukka
+        git commit -m 'Sync SukkaW to Sukka folder' || echo "No changes to commit"
+
+    - name: Sync cc63 to Surge模块 folder
+      run: |
+        rm -rf Surge模块
+        mkdir -p Surge模块
+        cp -r temp_Surge模块/* Surge模块/
+        git add Surge模块
+        git commit -m 'Sync cc63 to Surge模块 folder' || echo "No changes to commit"
+
+    - name: Sync VirgilClyne to Apple解锁 folder
+      run: |
+        rm -rf Apple解锁
+        mkdir -p Apple解锁
+        cp -r temp_Apple解锁/* Apple解锁/
+        git add Apple解锁
+        git commit -m 'Sync VirgilClyne to Apple解锁 folder' || echo "No changes to commit"
+
+    - name: Sync Yuu518 to sing-box-rules folder
+      run: |
+        rm -rf sing-box-rules
+        mkdir -p sing-box-rules
+        cp -r temp_sing-box-rules/* sing-box-rules/
+        git add sing-box-rules
+        git commit -m 'Sync Yuu518 to sing-box-rules folder' || echo "No changes to commit"
+
+    - name: Sync Peng-YM to Loon-Gallery folder
+      run: |
+        rm -rf Loon-Gallery
+        mkdir -p Loon-Gallery
+        cp -r temp_Loon-Gallery/* Loon-Gallery/
+        git add Loon-Gallery
+        git commit -m 'Sync Peng-YM to Loon-Gallery folder' || echo "No changes to commit"
+
+    - name: Sync Masaiki to GeoIP2-CN folder
+      run: |
+        rm -rf GeoIP2-CN
+        mkdir -p GeoIP2-CN
+        cp -r temp_GeoIP2-CN/* GeoIP2-CN/
+        git add GeoIP2-CN
+        git commit -m 'Sync Masaiki to GeoIP2-CN folder' || echo "No changes to commit"
+
+    - name: Sync Moli-X to Moli-X folder
+      run: |
+        rm -rf Moli-X
+        mkdir -p Moli-X
+        cp -r temp_Moli-X/* Moli-X/
+        git add Moli-X
+        git commit -m 'Sync Moli-X to Moli-X folder' || echo "No changes to commit"
+
+    - name: Sync NobyDa to NobyDa folder
+      run: |
+        rm -rf NobyDa
+        mkdir -p NobyDa
+        cp -r temp_NobyDa/* NobyDa/
+        git add NobyDa
+        git commit -m 'Sync NobyDa to NobyDa folder' || echo "No changes to commit"
+
+    - name: Sync zqzess to rule_for_quantumultX folder
+      run: |
+        rm -rf rule_for_quantumultX
+        mkdir -p rule_for_quantumultX
+        cp -r temp_rule_for_quantumultX/* rule_for_quantumultX/
+        git add rule_for_quantumultX
+        git commit -m 'Sync zqzess to rule_for_quantumultX folder' || echo "No changes to commit"
+
+    - name: Sync deezertidal to QuantumultX-Rewrite folder
+      run: |
+        rm -rf QuantumultX-Rewrite
+        mkdir -p QuantumultX-Rewrite
+        cp -r temp_QuantumultX-Rewrite/* QuantumultX-Rewrite/
+        git add QuantumultX-Rewrite
+        git commit -m 'Sync deezertidal to QuantumultX-Rewrite folder' || echo "No changes to commit"
+
+    - name: Sync app2smile to app2smile folder
+      run: |
+        rm -rf app2smile
+        mkdir -p app2smile
+        cp -r temp_app2smile/* app2smile/
+        git add app2smile
+        git commit -m 'Sync app2smile to app2smile folder' || echo "No changes to commit"
+
+    - name: Sync Loyalsoldier to clash-rules folder
+      run: |
+        rm -rf clash-rules
+        mkdir -p clash-rules
+        cp -r temp_clash-rules/* clash-rules/
+        git add clash-rules
+        git commit -m 'Sync Loyalsoldier to clash-rules folder' || echo "No changes to commit"
+
+    - name: Sync Johnshall to Shadowrocket-ADBlock-Rules-Forever folder
+      run: |
+        rm -rf Shadowrocket-ADBlock-Rules-Forever
+        mkdir -p Shadowrocket-ADBlock-Rules-Forever
+        cp -r temp_Shadowrocket-ADBlock-Rules-Forever/* Shadowrocket-ADBlock-Rules-Forever/
+        git add Shadowrocket-ADBlock-Rules-Forever
+        git commit -m 'Sync Johnshall to Shadowrocket-ADBlock-Rules-Forever folder' || echo "No changes to commit"
+
+    - name: Sync neodevpro to neodevhost folder
+      run: |
+        rm -rf neodevhost
+        mkdir -p neodevhost
+        cp -r temp_neodevhost/* neodevhost/
+        git add neodevhost
+        git commit -m 'Sync neodevpro to neodevhost folder' || echo "No changes to commit"
+
+    - name: Sync Cats-Team to AdRules folder
+      run: |
+        rm -rf AdRules
+        mkdir -p AdRules
+        cp -r temp_AdRules/* AdRules/
+        git add AdRules
+        git commit -m 'Sync Cats-Team to AdRules folder' || echo "No changes to commit"
+
+    - name: Sync uniarisan to adblock_list folder
+      run: |
+        rm -rf adblock_list
+        mkdir -p adblock_list
+        cp -r temp_adblock_list/* adblock_list/
+        git add adblock_list
+        git commit -m 'Sync uniarisan to adblock_list folder' || echo "No changes to commit"
+
+    - name: Sync limbopro to 毒奶去广告 folder
+      run: |
+        rm -rf 毒奶去广告
+        mkdir -p 毒奶去广告
+        cp -r temp_毒奶去广告/* 毒奶去广告/
+        git add 毒奶去广告
+        git commit -m 'Sync limbopro to 毒奶去广告 folder' || echo "No changes to commit"
 
     - name: Push changes
       run: |
