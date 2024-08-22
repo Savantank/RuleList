@@ -2,7 +2,7 @@ name: Sync Repositories
 
 on:
   schedule:
-    - cron: '0 12 * * *' # 每天运行一次
+    - cron: '0 0 * * *' # 每天运行一次
   workflow_dispatch: # 手动触发
   push:
     branches:
@@ -19,6 +19,13 @@ jobs:
         repository: Savantank/RuleList
         token: ${{ secrets.PAT_TOKEN }}
         fetch-depth: 0
+
+    - name: Clean up temporary directories
+      run: |
+        rm -rf temp_ios_rule_script
+        rm -rf temp_ProxyResource
+        rm -rf temp_ddgksf2013
+        rm -rf temp_Orz3_mini
 
     - name: Checkout ios_rule_script repository
       uses: actions/checkout@v2
@@ -60,7 +67,7 @@ jobs:
         mkdir -p bm7
         cp -r temp_ios_rule_script/* bm7/
         git add bm7
-        git commit -m 'Sync ios_rule_script to bm7 folder'
+        git commit -m 'Sync ios_rule_script to bm7 folder' || echo "No changes to commit"
 
     - name: Sync ProxyResource to iKeLee folder
       run: |
@@ -68,7 +75,7 @@ jobs:
         mkdir -p iKeLee
         cp -r temp_ProxyResource/* iKeLee/
         git add iKeLee
-        git commit -m 'Sync ProxyResource to iKeLee folder'
+        git commit -m 'Sync ProxyResource to iKeLee folder' || echo "No changes to commit"
 
     - name: Sync ddgksf2013 to 墨鱼配置 folder
       run: |
@@ -76,7 +83,7 @@ jobs:
         mkdir -p 墨鱼配置
         cp -r temp_ddgksf2013/* 墨鱼配置/
         git add 墨鱼配置
-        git commit -m 'Sync ddgksf2013 to 墨鱼配置 folder'
+        git commit -m 'Sync ddgksf2013 to 墨鱼配置 folder' || echo "No changes to commit"
 
     - name: Sync Orz-3 mini to 小白图标 folder
       run: |
@@ -84,7 +91,7 @@ jobs:
         mkdir -p 小白图标
         cp -r temp_Orz3_mini/* 小白图标/
         git add 小白图标
-        git commit -m 'Sync Orz-3 mini to 小白图标 folder'
+        git commit -m 'Sync Orz-3 mini to 小白图标 folder' || echo "No changes to commit"
 
     - name: Push changes
       run: |
