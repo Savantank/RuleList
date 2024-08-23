@@ -7,6 +7,28 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'bm7/**'
+      - 'iKeLee/**'
+      - '墨鱼配置/**'
+      - '小白图标/**'
+      - 'Sukka/**'
+      - 'Surge模块/**'
+      - 'Apple解锁/**'
+      - 'sing-box-rules/**'
+      - 'Loon-Gallery/**'
+      - 'GeoIP2-CN/**'
+      - 'Moli-X/**'
+      - 'NobyDa/**'
+      - 'rule_for_quantumultX/**'
+      - 'QuantumultX-Rewrite/**'
+      - 'app2smile/**'
+      - 'clash-rules/**'
+      - 'Shadowrocket-ADBlock-Rules-Forever/**'
+      - 'neodevhost/**'
+      - 'AdRules/**'
+      - 'adblock_list/**'
+      - '毒奶去广告/**'
 
 jobs:
   sync-repos:
@@ -352,7 +374,7 @@ jobs:
         mkdir -p adblock_list
         cp -r temp_adblock_list/* adblock_list/
         git add adblock_list
-        git commit -m 'Sync uniartisan to adblock_list folder' || echo "No changes to commit"
+        git commit -m 'Sync uniarisan to adblock_list folder' || echo "No changes to commit"
 
     - name: Sync limbopro to 毒奶去广告 folder
       run: |
