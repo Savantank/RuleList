@@ -374,7 +374,7 @@ jobs:
         mkdir -p adblock_list
         cp -r temp_adblock_list/* adblock_list/
         git add adblock_list
-        git commit -m 'Sync uniarisan to adblock_list folder' || echo "No changes to commit"
+        git commit -m 'Sync uniartisan to adblock_list folder' || echo "No changes to commit"
 
     - name: Sync limbopro to 毒奶去广告 folder
       run: |
