@@ -54,6 +54,10 @@ The WTFPL License is a permissive license that allows you to do whatever you wan
 **✈️https://t.me/AdRules_Offical_Chat**  
 **⭕https://github.com/Cats-Team/AdRules/issues**
 
+## Sponsor
+[Afdian](https://afdian.com/a/Cats-Team)  
+
+***Your sponsorship is entirely voluntary and does not grant any special privileges. Thank you for your support!***
 
 
 [<code><kbd>Back to top</kbd></code>](#)

@@ -124,6 +124,10 @@ dns=(
   "https://someonewhocares.org/hosts/zero/hosts"
   #Spam404
   "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt"
+  #SukkaW
+  "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_sukka.conf"
+  #Brave
+  "https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/brave-firstparty.txt"
   #Me
   "https://raw.githubusercontent.com/Cats-Team/dns-filter/main/abp.txt"
 )
