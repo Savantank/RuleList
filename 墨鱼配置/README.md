@@ -7,7 +7,7 @@
 [![](https://img.shields.io/github/followers/ddgksf2013?label=follow&style=social)](https://github.com/ddgksf2013)
 
 
-## 墨魚手記（[赞助](https://qr.alipay.com/fkx14452pqgkxzbji4tscd2 "感谢打赏")）[Update on 2024-08-25](https://github.com/ddgksf2013/Rewrite/blob/master/README.md)  
+## 墨魚手記（[赞助](https://qr.alipay.com/fkx14452pqgkxzbji4tscd2 "感谢打赏")）[Update on 2024-08-26](https://github.com/ddgksf2013/Rewrite/blob/master/README.md)  
 ### Tg 通知頻道 👉🏻[Cuttlefishの自留地](https://t.me/ddgksf2021)👈🏻  
 ![Visitor Count](https://profile-counter.glitch.me/ddgksf2013/count.svg)  
 
@@ -68,7 +68,7 @@
 		<td colspan="5">  </td>
     </tr>
     <tr>
-		<td rowspan="27"><strong>广告屏蔽</strong></td>
+		<td rowspan="28"><strong>广告屏蔽</strong></td>
 		<td > 1 </td> <td > 微信小程序去广告 </td> <td ><a href="https://github.com/ddgksf2013/Rewrite/raw/master/AdBlock/Applet.conf"><em>Applet.conf</em></a></td><td>ddgksf2013</td>
     </tr>
     <tr>
@@ -150,44 +150,44 @@
 		<td > 27 </td> <td > 滴滴出行 </td> <td ><a href="https://raw.githubusercontent.com/ZenmoFeiShi/Qx/main/Didichuxing.snippet"><em>Didichuxing.snippet</em></a></td><td>ZenmoFeiShi</td>  
     </tr>
 	<tr>
+		<td > 28 </td> <td > 百度网盘净化 </td> <td ><a href="https://gist.githubusercontent.com/ddgksf2013/f43026707830c7818ee3ba624e383c8d/raw/baiduCloud.adblock.js"><em>BaiduCloud.conf</em></a></td><td>ddgksf2013</td>
+    	</tr>
+	<tr>
 		<td colspan="5">  </td>
     </tr>
 	<tr>
-		<td rowspan="12"><strong>应用增强</strong></td>
+		<td rowspan="11"><strong>应用增强</strong></td>
 		<td > 1 </td> <td > <s>B站自动换区</s>[不适用新版] </td> <td ><s><a href="https://github.com/ddgksf2013/Rewrite/raw/master/Function/BilibiliAutoRegion.conf"><em>BilibiliAutoRegion.conf</em></a></s></td><td>Nobyda</td>
     </tr>
 	<tr>
 		<td > 2 </td> <td > <strong>B站CC繁体字幕转简体</strong> </td> <td ><a href="https://github.com/ddgksf2013/Rewrite/raw/master/Function/Bilibili_CC.conf"><em>Bilibili_CC.conf</em></a></td><td>ddgksf2013</td>
     </tr>
 	<tr>
-		<td > 3 </td> <td > 百度网盘净化+解锁倍速 </td> <td ><a href="https://gist.githubusercontent.com/ddgksf2013/f43026707830c7818ee3ba624e383c8d/raw/baiduCloud.vip.js"><em>BaiduCloud.conf</em></a></td><td>ddgksf2013</td>
+		<td > 3 </td> <td > Youtube无中文字幕机翻方案 </td> <td ><a href="https://raw.githubusercontent.com/id77/QuantumultX/master/rewrite/Youtube_CC.conf#out=Hant"><em>Youtube_CC.conf</em></a></td><td>id77</td>
     </tr>
 	<tr>
-		<td > 4 </td> <td > Youtube无中文字幕机翻方案 </td> <td ><a href="https://raw.githubusercontent.com/id77/QuantumultX/master/rewrite/Youtube_CC.conf#out=Hant"><em>Youtube_CC.conf</em></a></td><td>id77</td>
+		<td > 4 </td> <td > 各种流媒体字幕翻译 </td> <td ><a href="https://raw.githubusercontent.com/Neurogram-R/Quantumult-X/main/snippet/Dualsub.snippet"><em>Dualsub.conf</em></a></td><td>Neurogram-R</td>
     </tr>
 	<tr>
-		<td > 5 </td> <td > 各种流媒体字幕翻译 </td> <td ><a href="https://raw.githubusercontent.com/Neurogram-R/Quantumult-X/main/snippet/Dualsub.snippet"><em>Dualsub.conf</em></a></td><td>Neurogram-R</td>
+		<td > 5 </td> <td > 微信110解锁被屏蔽的URL </td> <td ><a href="https://raw.githubusercontent.com/ddgksf2013/Rewrite/master/Function/UnblockURLinWeChat.conf"><em>WeChat110.conf</em></a></td><td>zZPiglet</td>
     </tr>
 	<tr>
-		<td > 6 </td> <td > 微信110解锁被屏蔽的URL </td> <td ><a href="https://raw.githubusercontent.com/ddgksf2013/Rewrite/master/Function/UnblockURLinWeChat.conf"><em>WeChat110.conf</em></a></td><td>zZPiglet</td>
+		<td > 6 </td> <td > 指南针解锁经纬度 </td> <td ><a href="https://raw.githubusercontent.com/VirgilClyne/iRingo/main/snippet/Location.snippet"><em>Location.conf</em></a></td><td>VirgilClyne</td>
     </tr>
 	<tr>
-		<td > 7 </td> <td > 指南针解锁经纬度 </td> <td ><a href="https://raw.githubusercontent.com/VirgilClyne/iRingo/main/snippet/Location.snippet"><em>Location.conf</em></a></td><td>VirgilClyne</td>
+		<td > 7 </td> <td > Testflight共享+解锁区域限制 </td> <td ><a href="https://raw.githubusercontent.com/NobyDa/Script/master/TestFlight/TestFlightAccount.js"><em>TestFlightAccount.conf</em></a></td><td>NobyDa</td>
     </tr>
 	<tr>
-		<td > 8 </td> <td > Testflight共享+解锁区域限制 </td> <td ><a href="https://raw.githubusercontent.com/NobyDa/Script/master/TestFlight/TestFlightAccount.js"><em>TestFlightAccount.conf</em></a></td><td>NobyDa</td>
+		<td > 8 </td> <td > UposRedirect </td> <td ><a href="https://github.com/ddgksf2013/Rewrite/raw/master/Function/UposRedirect.conf"><em>UposRedirect.conf</em></a></td><td>ddgksf2013</td>
     </tr>
 	<tr>
-		<td > 9 </td> <td > UposRedirect </td> <td ><a href="https://github.com/ddgksf2013/Rewrite/raw/master/Function/UposRedirect.conf"><em>UposRedirect.conf</em></a></td><td>ddgksf2013</td>
+		<td > 9 </td> <td > <strong>阿里云盘倍速</strong> </td> <td ><a href="https://gist.githubusercontent.com/ddgksf2013/f4752e632fd3375ea2811985c5b635dc/raw/alicloud.js"><em>alicloud.js</em></a></td><td>ddgksf2013</td>
     </tr>
 	<tr>
-		<td > 10 </td> <td > <strong>阿里云盘倍速</strong> </td> <td ><a href="https://gist.githubusercontent.com/ddgksf2013/f4752e632fd3375ea2811985c5b635dc/raw/alicloud.js"><em>alicloud.js</em></a></td><td>ddgksf2013</td>
-    </tr>
-	<tr>
-		<td > 11 </td> <td > Spotify歌词翻译 </td> <td ><a href="https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-lyric.js"><em>spotify-lyric.js</em></a></td><td>app2smile</td>
+		<td > 10 </td> <td > Spotify歌词翻译 </td> <td ><a href="https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-lyric.js"><em>spotify-lyric.js</em></a></td><td>app2smile</td>
     </tr>
 			<tr>
-		<td > 12 </td> <td > VVebo修复用户时间线 </td> <td ><a href="https://raw.githubusercontent.com/bin64/Scripts/main/QuantumultX/vvebo.js"><em>vvebo.js</em></a></td><td>suiyuran</td>  
+		<td > 11 </td> <td > VVebo修复用户时间线 </td> <td ><a href="https://raw.githubusercontent.com/bin64/Scripts/main/QuantumultX/vvebo.js"><em>vvebo.js</em></a></td><td>suiyuran</td>  
     </tr>
 	<tr>
 		<td colspan="5">  </td>
