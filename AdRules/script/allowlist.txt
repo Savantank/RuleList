@@ -1,5 +1,10 @@
 #!-白名单-!#
 
+#edge and windows
+ntp.msn.cn
+ntp.msn.com
+assets.msn.cn
+
 # 小米 隐私条款撤回 #195
 data.sec.miui.com
 
