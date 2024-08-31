@@ -1,5 +1,8 @@
 #!-白名单-!#
 
+#199
+events.data.microsoft.com
+
 #edge and windows
 ntp.msn.cn
 ntp.msn.com
