@@ -1,22 +1,15 @@
 import ENV from "../ENV/ENV.mjs";
+import parseWeatherKitURL from "../function/parseWeatherKitURL.mjs"
 import ForecastNextHour from "./ForecastNextHour.mjs";
 import providerNameToLogo from "../function/providerNameToLogo.mjs";
 
 export default class ColorfulClouds {
-    constructor($ = new ENV("ColorfulClouds"), options = { "url": new URL() }) {
+    constructor($ = new ENV("ColorfulClouds"), options = { "url": new URL($request.url) }) {
         this.Name = "ColorfulClouds";
-        this.Version = "1.6.10";
+        this.Version = "1.7.0";
         $.log(`\n🟧 ${this.Name} v${this.Version}\n`, "");
-        this.url = $request.url;
-        const RegExp = /^\/api\/(?<version>v1|v2|v3)\/(availability|weather)\/(?<language>[\w-_]+)\/(?<latitude>-?\d+\.\d+)\/(?<longitude>-?\d+\.\d+).*(?<countryCode>country=[A-Z]{2})?.*/i;
-        const Parameters = (options?.url?.pathname ?? options?.url).match(RegExp)?.groups;
-        this.version = options?.version ?? Parameters?.version;
-        this.language = options?.language ?? Parameters?.language;
-        this.latitude = options?.latitude ?? Parameters?.latitude;
-        this.longitude = options?.longitude ?? Parameters?.longitude;
-        this.country = options?.country ?? Parameters?.countryCode ?? options?.url?.searchParams?.get("country");
-        //Object.assign(this, options);
-        $.log(`\n🟧 version: ${this.version} language: ${this.language}\n🟧 latitude: ${this.latitude} longitude: ${this.longitude}\n🟧 country: ${this.country}\n`, "");
+        const Parameters = parseWeatherKitURL(options.url);
+        Object.assign(this, Parameters, options, $);
         this.$ = $;
     };
 
@@ -36,12 +29,12 @@ export default class ColorfulClouds {
                         case "ok":
                             body.result.minutely.probability = body.result.minutely.probability.map(probability => Math.round(probability * 100));
                             let minuteStemp = new Date(body?.server_time * 1000).setSeconds(0, 0);
-                            minuteStemp = minuteStemp.valueOf() / 1000;
+                            minuteStemp = minuteStemp.valueOf() / 1000 - 60;
                             forecastNextHour = {
                                 "metadata": {
                                     "attributionUrl": "https://www.caiyunapp.com/h5",
                                     "expireTime": timeStamp + 60 * 60,
-                                    //"language": body?.lang,
+                                    "language": `${this.language}-${this.country}`, // body?.lang,
                                     "latitude": body?.location?.[0],
                                     "longitude": body?.location?.[1],
                                     "providerLogo": providerNameToLogo("彩云天气", this.version),
@@ -69,7 +62,7 @@ export default class ColorfulClouds {
                                 }),
                                 "summary": []
                             };
-                            forecastNextHour.minutes.length = 90;
+                            forecastNextHour.minutes.length = 85;
                             forecastNextHour.forecastEnd = minuteStemp + 60 * forecastNextHour.minutes.length;
                             forecastNextHour.minutes = ForecastNextHour.Minute(forecastNextHour.minutes, body?.result?.minutely?.description);
                             forecastNextHour.summary = ForecastNextHour.Summary(forecastNextHour.minutes);
