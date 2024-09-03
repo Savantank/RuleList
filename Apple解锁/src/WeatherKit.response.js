@@ -8,10 +8,12 @@ import providerNameToLogo from "./function/providerNameToLogo.mjs";
 import WeatherKit2 from "./class/WeatherKit2.mjs";
 import WAQI from "./class/WAQI.mjs";
 import ColorfulClouds from "./class/ColorfulClouds.mjs";
+import QWeather from "./class/QWeather.mjs";
+import AirQuality from "./class/AirQuality.mjs";
 
 import * as flatbuffers from 'flatbuffers';
 
-const $ = new ENV(" iRingo: 🌤 WeatherKit v1.4.0(4131) response");
+const $ = new ENV(" iRingo: 🌤 WeatherKit v1.5.2(4144) response");
 
 /***************** Processing *****************/
 // 解构URL
@@ -62,7 +64,7 @@ $.log(`⚠ FORMAT: ${FORMAT}`, "");
 							// 路径判断
 							if (PATH.startsWith("/api/v1/availability/")) {
 								$.log(`🚧 body: ${JSON.stringify(body)}`, "");
-								body = ["airQuality", "currentWeather", "forecastDaily", "forecastHourly", "forecastPeriodic", "historicalComparisons", "weatherChanges", "forecastNextHour", "weatherAlerts", "weatherAlertNotifications", "news"];
+								body = Configs?.Availability?.v2;
 							};
 							break;
 					};
@@ -89,7 +91,27 @@ $.log(`⚠ FORMAT: ${FORMAT}`, "");
 										const weatherKit2 = new WeatherKit2({ "bb": ByteBuffer, "builder": Builder });
 										body = weatherKit2.decode("all");
 										if (url.searchParams.get("dataSets").includes("airQuality")) {
-											if (Settings.AQI.ReplaceProviders.includes(body?.airQuality?.metadata?.providerName)) body = await InjectAirQuality(url, body, Settings);
+											// PollutantUnitConverter
+											switch (body?.airQuality?.metadata?.providerName) {
+												case "和风天气":
+												case "QWeather":
+													if (body?.airQuality?.pollutants) body.airQuality.pollutants = body.airQuality.pollutants.map((pollutant) => {
+														switch (pollutant.pollutantType) {
+															case "CO": // Fix CO amount from QWeather
+															pollutant.amount = AirQuality.ConvertUnit("MILLIGRAMS_PER_CUBIC_METER", "MICROGRAMS_PER_CUBIC_METER", pollutant.amount, -1);
+																break;
+															default:
+																break;
+														};
+														return pollutant;
+													});
+													break;
+											};
+											// InjectAirQuality
+											if (Settings?.AQI?.ReplaceProviders?.includes(body?.airQuality?.metadata?.providerName)) body = await InjectAirQuality(url, body, Settings);
+											// ConvertAirQuality
+											if (Settings?.AQI?.Local?.ReplaceScales.includes(body?.airQuality?.scale.split(".")?.[0])) body = ConvertAirQuality(body, Settings);
+											// ProviderLogo
 											if (body?.airQuality?.metadata?.providerName && !body?.airQuality?.metadata?.providerLogo) body.airQuality.metadata.providerLogo = providerNameToLogo(body?.airQuality?.metadata?.providerName, "v2");
 										};
 										if (url.searchParams.get("dataSets").includes("forecastNextHour")) {
@@ -165,6 +187,26 @@ async function InjectAirQuality(url, body, Settings) {
 	return body;
 };
 
+function ConvertAirQuality(body, Settings) {
+	$.log(`☑️ ConvertAirQuality`, "");
+	let airQuality;
+	switch (Settings?.AQI?.Local?.Standard) {
+		case "NONE":
+			break;
+		case 'WAQI_InstantCast':
+		default:
+			airQuality = new AirQuality().AQI(body?.airQuality?.pollutants);
+			if (!Settings?.AQI?.Local?.UseConvertedUnit) delete airQuality.pollutants;
+			break;
+	};
+	if (airQuality.index) {
+		body.airQuality = { ...body.airQuality, ...airQuality };
+		body.airQuality.metadata.providerName += `\nConverted using ${Settings?.AQI?.Local?.Standard}`;
+	};
+	$.log(`✅ ConvertAirQuality`, "");
+	return body;
+};
+
 async function InjectForecastNextHour(url, body, Settings) {
 	$.log(`☑️ InjectForecastNextHour`, "");
 	let forecastNextHour;
@@ -173,6 +215,8 @@ async function InjectForecastNextHour(url, body, Settings) {
 		case "WeatherKit":
 			break;
 		case "QWeather":
+			const qWeather = new QWeather($, { "url": url, "host": Settings?.API?.QWeather?.Host, "version": "v7" });
+			forecastNextHour = await qWeather.Minutely(Settings?.API?.QWeather?.Token);
 			break;
 		case "ColorfulClouds":
 		default:
