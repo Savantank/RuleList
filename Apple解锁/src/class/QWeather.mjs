@@ -4,20 +4,25 @@ import ForecastNextHour from "./ForecastNextHour.mjs";
 import providerNameToLogo from "../function/providerNameToLogo.mjs";
 
 export default class QWeather {
-    constructor($ = new ENV("QWeather"), options = { "url": new URL($request.url), "host": "devapi.qweather.com", "version": "v7" }) {
+    constructor($ = new ENV("QWeather"), options) {
         this.Name = "QWeather";
-        this.Version = "1.0.2";
+        this.Version = "1.0.7";
         $.log(`\n🟧 ${this.Name} v${this.Version}\n`, "");
-        const Parameters = parseWeatherKitURL(options.url);
-        Object.assign(this, Parameters, options, $);
+        this.url = options.url || new URL($request.url);
+        this.host = options.host || "devapi.qweather.com";
+        this.token = options.token;
+        this.header = options.header || { "Content-Type": "application/json" };
+        this.convertUnits = options.convertUnits || false;
+        const Parameters = parseWeatherKitURL(this.url);
+        Object.assign(this, Parameters);
         this.$ = $;
     };
 
-    async Minutely(token = "", header = { "Content-Type": "application/json" }) {
-        this.$.log(`☑️ Minutely, token: ${token}, host: ${this.host}, version: ${this.version}`, "");
+    async Minutely(token = this.token, version = "v7") {
+        this.$.log(`☑️ Minutely, token: ${token}, host: ${this.host}, version: ${version}`, "");
         const request = {
-            "url": `https://${this.host}/${this.version}/minutely/5m?location=${this.longitude},${this.latitude}&key=${token}`,
-            "header": header,
+            "url": `https://${this.host}/${version}/minutely/5m?location=${this.longitude},${this.latitude}&key=${token}`,
+            "header": this.header,
         };
         let forecastNextHour;
         try {
@@ -62,7 +67,7 @@ export default class QWeather {
                     };
                     forecastNextHour.minutes.length = Math.min(85, forecastNextHour.minutes.length);
                     forecastNextHour.forecastEnd = minuteStemp + 60 * forecastNextHour.minutes.length;
-                    forecastNextHour.minutes = ForecastNextHour.Minute(forecastNextHour.minutes, body?.summary);
+                    forecastNextHour.minutes = ForecastNextHour.Minute(forecastNextHour.minutes, body?.summary, "mmph");
                     forecastNextHour.summary = ForecastNextHour.Summary(forecastNextHour.minutes);
                     forecastNextHour.condition = ForecastNextHour.Condition(forecastNextHour.minutes);
                     break;
@@ -75,7 +80,7 @@ export default class QWeather {
                 case "429":
                 case "500":
                 case undefined:
-                    throw { "status": body?.code, "reason": body?.error };
+                    throw JSON.stringify({ "status": body?.code, "reason": body?.error });
             };
         } catch (error) {
             this.$.logErr(error);
