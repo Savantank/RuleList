@@ -1,5 +1,8 @@
 #!-白名单-!#
 
+#成都 地震预警
+newloc.map.n.shifen.com
+
 #199
 events.data.microsoft.com
 
