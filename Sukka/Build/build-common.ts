@@ -4,17 +4,15 @@ import * as path from 'node:path';
 import { readFileByLine } from './lib/fetch-text-by-line';
 import { processLine } from './lib/process-line';
 import { createRuleset } from './lib/create-file';
-import { domainDeduper } from './lib/domain-deduper';
+import { domainsetDeduper } from './lib/domain-deduper';
 import type { Span } from './trace';
 import { task } from './trace';
 import { SHARED_DESCRIPTION } from './lib/constants';
 import { fdir as Fdir } from 'fdir';
 import { appendArrayInPlace } from './lib/append-array-in-place';
-import { removeFiles } from './lib/misc';
 import { OUTPUT_CLASH_DIR, OUTPUT_SINGBOX_DIR, OUTPUT_SURGE_DIR, SOURCE_DIR } from './constants/dir';
 
 const MAGIC_COMMAND_SKIP = '# $ custom_build_script';
-const MAGIC_COMMAND_RM = '# $ custom_no_output';
 const MAGIC_COMMAND_TITLE = '# $ meta_title ';
 const MAGIC_COMMAND_DESCRIPTION = '# $ meta_description ';
 
@@ -68,7 +66,6 @@ export const buildCommon = task(require.main === module, __filename)(async (span
 });
 
 const $skip = Symbol('skip');
-const $rm = Symbol('rm');
 
 const processFile = (span: Span, sourcePath: string) => {
   // console.log('Processing', sourcePath);
@@ -80,9 +77,6 @@ const processFile = (span: Span, sourcePath: string) => {
 
     try {
       for await (const line of readFileByLine(sourcePath)) {
-        if (line.startsWith(MAGIC_COMMAND_RM)) {
-          return $rm;
-        }
         if (line.startsWith(MAGIC_COMMAND_SKIP)) {
           return $skip;
         }
@@ -121,16 +115,8 @@ function transformDomainset(parentSpan: Span, sourcePath: string, relativePath: 
 
         const clashFileBasename = relativePath.slice(0, -path.extname(relativePath).length);
 
-        if (res === $rm) {
-          return removeFiles([
-            path.resolve(OUTPUT_SURGE_DIR, relativePath),
-            path.resolve(OUTPUT_CLASH_DIR, `${clashFileBasename}.txt`),
-            path.resolve(OUTPUT_SINGBOX_DIR, `${clashFileBasename}.json`)
-          ]);
-        }
-
         const [title, descriptions, lines] = res;
-        const deduped = domainDeduper(lines);
+        const deduped = domainsetDeduper(lines);
 
         let description: string[];
         if (descriptions.length) {
@@ -169,14 +155,6 @@ async function transformRuleset(parentSpan: Span, sourcePath: string, relativePa
       if (res === $skip) return;
 
       const clashFileBasename = relativePath.slice(0, -path.extname(relativePath).length);
-
-      if (res === $rm) {
-        return removeFiles([
-          path.resolve(OUTPUT_SURGE_DIR, relativePath),
-          path.resolve(OUTPUT_CLASH_DIR, `${clashFileBasename}.txt`),
-          path.resolve(OUTPUT_SINGBOX_DIR, `${clashFileBasename}.json`)
-        ]);
-      }
 
       const [title, descriptions, lines] = res;
 
