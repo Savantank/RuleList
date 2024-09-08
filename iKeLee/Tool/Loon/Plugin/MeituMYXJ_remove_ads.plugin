@@ -1,16 +1,19 @@
-#!name = 广告平台拦截器
-#!desc = 此插件是所有去广告插件的基础，只针对广告平台处理。你依然需要安装其他去广告插件来搭配使用，并确保此插件始终排序在顶部。\n支持拦截腾讯、字节跳动、快手、百度、邑盟、倍孜、艾狄墨搏、袤博、极光、个推、友盟、阿里、优比客思、秒针、网易、美团、小米、京东、天目、讯飞、泛连、锐讯灵通、聚次方、美数、嗨量、钧云等广告平台的广告请求，更适合iOS平台的应用。
-#!openUrl = 
+#!name = 美颜相机去广告
+#!desc = 移除开屏广告、应用内弹窗，精简首页和我的页面。
+#!openUrl = https://apps.apple.com/app/id592331499
 #!author = 可莉🅥[https://github.com/luestr/ProxyResource/blob/main/README.md]
 #!tag = 去广告
 #!system = 
 #!system_version = 
-#!loon_version = 3.2.1(745)
+#!loon_version = 3.2.2(751)
 #!homepage = https://github.com/luestr/ProxyResource/blob/main/README.md
-#!icon = https://raw.githubusercontent.com/luestr/IconResource/main/Website_icon/120px/TencentAd.png
-#!date = 2024-09-08 01:19:17
+#!icon = https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeituMYXJ.png
+#!date = 2024-09-07 23:08:09
 
 [Rule]
+# 广告下发
+DOMAIN, adui.tg.meitu.com, REJECT
+
 # 字节跳动广告
 AND, ((DOMAIN-KEYWORD, -ad-), (DOMAIN-SUFFIX, byteimg.com)), REJECT
 # AND, ((DOMAIN-KEYWORD, -sign-), (DOMAIN-SUFFIX, tiktokcdn.com)), REJECT
@@ -59,81 +62,6 @@ DOMAIN-KEYWORD, log-api.pangolin-sdk-toutiao, REJECT
 DOMAIN-KEYWORD, -ad.byteoversea.com, REJECT
 DOMAIN-KEYWORD, video-cn.snssdk.com, REJECT
 DOMAIN-KEYWORD, asiad.byteactivity, REJECT
-
-# 讯飞AI营销
-DOMAIN-KEYWORD, iflyad.bj.openstorage.cn, REJECT
-DOMAIN-KEYWORD, bjimp.voiceads.cn, REJECT
-
-# 美数科技
-DOMAIN, sdk.1rtb.net, REJECT
-DOMAIN, cdn.1rtb.com, REJECT
-
-# 嗨量科技 - 海贝巨量
-DOMAIN, adx.halomobi.com, REJECT
-
-# 钧云 - ADHUB
-DOMAIN, api.htp.hubcloud.com.cn, REJECT
-DOMAIN, res1.hubcloud.com.cn, REJECT
-DOMAIN, sdktmp.hubcloud.com.cn, REJECT
-DOMAIN, v.adx.hubcloud.com.cn, REJECT
-
-# InMobi - 邑盟信息技术（上海）有限公司
-DOMAIN, config.inmobi.cn, REJECT
-
-# 北京锐讯灵通科技有限公司
-DOMAIN, ztoken.uyunad.com, REJECT
-
-# 快手联盟 - 广告服务商
-DOMAIN, gdfp.gifshow.com, REJECT
-DOMAIN, open.e.kuaishou.com, REJECT
-DOMAIN-SUFFIX, adukwai.com, REJECT
-
-# SupersonicAds
-DOMAIN, init.supersonicads.com, REJECT
-
-# 上海倍孜
-DOMAIN, sdk.beizi.biz, REJECT
-
-# 秒针系统 - 广告服务商
-DOMAIN, admaster.com.cn, REJECT
-DOMAIN-SUFFIX, miaozhen.com, REJECT
-
-# 艾狄墨搏 - 广告服务商
-DOMAIN, monitor.ssp.admobile.top, REJECT
-DOMAIN, sdk.ssp.admobile.top, REJECT
-DOMAIN-SUFFIX, admobile.top, REJECT
-
-# 袤博 - 广告服务商
-DOMAIN, api-c.dutils.com, REJECT
-DOMAIN, api-d.dutils.com, REJECT
-DOMAIN, api-p0.yksdks.com, REJECT
-DOMAIN, cache-verify.dutils.com, REJECT
-DOMAIN, cdn-api-verify.dutils.com, REJECT
-DOMAIN, devs-data.dutils.com, REJECT
-DOMAIN, log-verify.dutils.com, REJECT
-DOMAIN, m.mpl.dutils.com, REJECT
-DOMAIN, api.share.mob.com, REJECT
-DOMAIN, api.verify.mob.com, REJECT
-DOMAIN, log-verify.mob.com, REJECT
-DOMAIN, sdk.push.mob.com, REJECT
-
-# 极光 - 广告服务商
-DOMAIN, ali-stats.jpush.cn, REJECT
-DOMAIN, ce3e75d5.jpush.cn, REJECT
-DOMAIN, config-junion.jpush.cn, REJECT
-DOMAIN, config.jpush.cn, REJECT
-DOMAIN, fcapi-ipv6.jpush.cn, REJECT
-DOMAIN, gd-stats.jpush.cn, REJECT
-DOMAIN, s.jpush.cn, REJECT
-DOMAIN, sdk.verification.jiguang.cn, REJECT
-DOMAIN, sis-ipv6.jpush.cn, REJECT
-DOMAIN, smartop-sdkapi.jiguang.cn, REJECT
-DOMAIN, status-ipv6.jpush.cn, REJECT
-DOMAIN, tsis.jpush.cn, REJECT
-DOMAIN, user.jpush.cn, REJECT
-DOMAIN-SUFFIX, jiguang.cn, REJECT
-DOMAIN-SUFFIX, jpush.cn, REJECT
-DOMAIN-SUFFIX, jpush.io, REJECT
 
 # 百度联盟 - 广告服务商
 DOMAIN, als.baidu.com, REJECT
@@ -185,9 +113,6 @@ DOMAIN-SUFFIX, l.qq.com, REJECT
 DOMAIN-SUFFIX, ugdtimg.com, REJECT
 IP-CIDR, 47.110.187.87/32, REJECT, no-resolve
 
-# App全渠道统计
-DOMAIN-SUFFIX, openinstall.io, REJECT
-
 # 个推
 DOMAIN, b-gtc.getui.net, REJECT
 DOMAIN, c-gtc.getui.net, REJECT
@@ -200,70 +125,19 @@ DOMAIN-SUFFIX, mobileservice.cn, REJECT
 DOMAIN-SUFFIX, getui.com, REJECT
 DOMAIN-SUFFIX, igexin.com, REJECT
 
-# 友盟
-DOMAIN, cnlogs.umeng.com, REJECT
-DOMAIN, errlog.umeng.com, REJECT
-DOMAIN, errnewlog.umeng.com, REJECT
-DOMAIN, ucc.umeng.com, REJECT
-DOMAIN, ulogs.umeng.com, REJECT
-DOMAIN, utoken.umeng.com, REJECT
-DOMAIN, deeplink.umeng.com, REJECT
-DOMAIN, aspect-upush.umeng.com, REJECT
-DOMAIN, plbslog.umeng.com, REJECT
-DOMAIN, log.umtrack.com, REJECT
-DOMAIN, aaid.umeng.com, REJECT
-
-# FUNLINK - 北京泛连科技
-DOMAIN, adtracker.adfunlink.com, REJECT
-
-# 天目 - 广告服务商
-DOMAIN, sdk.tianmu.mobi, REJECT
-
-# 上海优比客思科技有限公司 - 广告服务商
-DOMAIN, e-u1.ubixioe.com, REJECT
-DOMAIN, sdk-data.ubixioe.com, REJECT
-DOMAIN, tower.ubixioe.com, REJECT
-DOMAIN, tx-cfg-u1.ubixioe.com, REJECT
-DOMAIN, tx-data-u1.ubixioe.com, REJECT
-
-# 阿里巴巴
-DOMAIN, ossgw.alicdn.com, REJECT
-DOMAIN, ems.youku.com, REJECT
-DOMAIN, hudong.alicdn.com, REJECT
-DOMAIN, et.tanx.com, REJECT
-DOMAIN, beacon-api.aliyuncs.com, REJECT
-DOMAIN, adash.man.aliyuncs.com, REJECT
-DOMAIN, applog.uc.cn, REJECT
-AND, ((DOMAIN-KEYWORD, adash), (DOMAIN-SUFFIX, ut.taobao.com)), REJECT
-
-# 网易
-DOMAIN, nex.163.com, REJECT
-DOMAIN, iad.g.163.com, REJECT
-DOMAIN, adx-bj.anythinktech.com, REJECT
-DOMAIN, api.anythinktech.com, REJECT
-DOMAIN, tk.anythinktech.com, REJECT
-DOMAIN, da.anythinktech.com, REJECT
-
-# 小米
-DOMAIN, sdkconfig.ad.xiaomi.com, REJECT
-
-# 美团
-DOMAIN, al-log.d.meituan.net, REJECT
-DOMAIN, babel-statistics-android.d.meituan.net, REJECT
-DOMAIN, maplocatesdksnapshot.d.meituan.net, REJECT
-DOMAIN, metrics-picture.d.meituan.net, REJECT
-DOMAIN, route-stats.d.meituan.net, REJECT
-
-# 京东
-DOMAIN, dsp-x.jd.com, REJECT
-DOMAIN, xlog.jd.com, REJECT
-DOMAIN, janapi.jd.com, REJECT
-
 # 聚次方 - TopOn
 DOMAIN, api.mosspf.com, REJECT
 DOMAIN, da.mosspf.com, REJECT
 
 [Rewrite]
+# 首页轮播图
+^https:\/\/api\.meiyan\.com\/operation\/home_banner\.json\? reject-dict
+
+# 弹窗和首页红点词
+^https:\/\/api\.meiyan\.com\/vip\/permission_update_popup\.json\? reject-dict
+^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? response-body-json-del response.time_limit response.bubble response.person_center
+^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? response-body-json-replace response.function_pop.meiyan_style.is_pop false response.onoff.vip_half_window_exit_remain_popup.open 0 response.onoff.vip_home_exit_remain_popup 0
+
 # 字节跳动广告
 ^https:\/\/ether-pack\.pangolin-sdk-toutiao\.com\/union\/endcard\/ reject
 ^https:\/\/api-access\.pangolin-sdk-toutiao\d?\.com\/api\/ad\/ reject
@@ -276,6 +150,8 @@ DOMAIN, da.mosspf.com, REJECT
 ^https:\/\/images\.pinduoduo\.com\/marketing_api\/ reject
 
 [Script]
+# 首页功能栏目和美颜推荐
+http-response ^https:\/\/api\.meiyan\.com\/operation\/home\.json\? script-path = https://raw.githubusercontent.com/luestr/ProxyResource/main/Resource/Script/MeituMYXJ/MeituMYXJ_remove_ads.js, requires-body = true, tag = 精简首页功能栏目并移除美颜推荐
 
 [MitM]
-hostname = ether-pack.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao?.com, sf*-fe-tos.pglstatp-toutiao.com, video-dsp.pddpic.com, t-dsp.pinduoduo.com, images.pinduoduo.com
+hostname = api.meiyan.com, ether-pack.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao?.com, sf*-fe-tos.pglstatp-toutiao.com, video-dsp.pddpic.com, t-dsp.pinduoduo.com, images.pinduoduo.com
