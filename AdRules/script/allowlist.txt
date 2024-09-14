@@ -1,5 +1,8 @@
 #!-白名单-!#
 
+#百度地图 #201
+newvector.map.baidu.com
+
 #360智慧生活
 sobot.com
 
