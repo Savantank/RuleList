@@ -1,5 +1,8 @@
 #!-白名单-!#
 
+#win天气 #202
+api.msn.com
+
 #百度地图 #201
 newvector.map.baidu.com
 
