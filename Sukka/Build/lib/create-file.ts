@@ -10,6 +10,7 @@ import stringify from 'json-stringify-pretty-compact';
 import { ipCidrListToSingbox, surgeDomainsetToSingbox, surgeRulesetToSingbox } from './singbox';
 import { createTrie } from './trie';
 import { pack, unpackFirst, unpackSecond } from './bitwise';
+import { asyncWriteToStream } from './async-write-to-stream';
 
 export async function compareAndWriteFile(span: Span, linesA: string[], filePath: string) {
   let isEqual = true;
@@ -67,17 +68,21 @@ export async function compareAndWriteFile(span: Span, linesA: string[], filePath
   }
 
   await span.traceChildAsync(`writing ${filePath}`, async () => {
-    // if (linesALen < 10000) {
-    return writeFile(filePath, fastStringArrayJoin(linesA, '\n') + '\n');
-    // }
-    // const writer = file.writer();
+    // The default highwater mark is normally 16384,
+    // So we make sure direct write to file if the content is
+    // most likely less than 500 lines
+    if (linesALen < 500) {
+      return writeFile(filePath, fastStringArrayJoin(linesA, '\n') + '\n');
+    }
 
-    // for (let i = 0; i < linesALen; i++) {
-    //   writer.write(linesA[i]);
-    //   writer.write('\n');
-    // }
-
-    // return writer.end();
+    const writeStream = fs.createWriteStream(filePath);
+    for (let i = 0; i < linesALen; i++) {
+      const p = asyncWriteToStream(writeStream, linesA[i] + '\n');
+      // eslint-disable-next-line no-await-in-loop -- stream high water mark
+      if (p) await p;
+    }
+    await asyncWriteToStream(writeStream, '\n');
+    writeStream.end();
   });
 }
 
@@ -183,72 +188,73 @@ export const createRuleset = (
     singBoxPath: string,
     _clashMrsPath?: string
   ]
-) => parentSpan.traceChild(`create ruleset: ${path.basename(surgePath, path.extname(surgePath))}`).traceAsyncFn(async (childSpan) => {
-  content = processRuleSet(content);
-  const surgeContent = childSpan.traceChildSync('process surge ruleset', () => {
-    let _surgeContent;
-    switch (type) {
-      case 'domainset':
-        _surgeContent = [MARK, ...content];
-        break;
-      case 'ruleset':
-        _surgeContent = [`DOMAIN,${MARK}`, ...content];
-        break;
-      case 'ipcidr':
-        _surgeContent = [`DOMAIN,${MARK}`, ...content.map(i => `IP-CIDR,${i}`)];
-        break;
-      case 'ipcidr6':
-        _surgeContent = [`DOMAIN,${MARK}`, ...content.map(i => `IP-CIDR6,${i}`)];
-        break;
-      default:
-        throw new TypeError(`Unknown type: ${type}`);
-    }
+) => parentSpan.traceChildAsync(
+  `create ruleset: ${path.basename(surgePath, path.extname(surgePath))}`,
+  async (childSpan) => {
+    const surgeContent = childSpan.traceChildSync('process surge ruleset', () => {
+      let _surgeContent;
+      switch (type) {
+        case 'domainset':
+          _surgeContent = [MARK, ...content];
+          break;
+        case 'ruleset':
+          _surgeContent = [`DOMAIN,${MARK}`, ...processRuleSet(content)];
+          break;
+        case 'ipcidr':
+          _surgeContent = [`DOMAIN,${MARK}`, ...processRuleSet(content.map(i => `IP-CIDR,${i}`))];
+          break;
+        case 'ipcidr6':
+          _surgeContent = [`DOMAIN,${MARK}`, ...processRuleSet(content.map(i => `IP-CIDR6,${i}`))];
+          break;
+        default:
+          throw new TypeError(`Unknown type: ${type}`);
+      }
 
-    return withBannerArray(title, description, date, _surgeContent);
-  });
+      return withBannerArray(title, description, date, _surgeContent);
+    });
 
-  const clashContent = childSpan.traceChildSync('convert incoming ruleset to clash', () => {
-    let _clashContent;
-    switch (type) {
-      case 'domainset':
-        _clashContent = [MARK, ...surgeDomainsetToClashDomainset(content)];
-        break;
-      case 'ruleset':
-        _clashContent = [`DOMAIN,${MARK}`, ...surgeRulesetToClashClassicalTextRuleset(content)];
-        break;
-      case 'ipcidr':
-      case 'ipcidr6':
-        _clashContent = content;
-        break;
-      default:
-        throw new TypeError(`Unknown type: ${type}`);
-    }
-    return withBannerArray(title, description, date, _clashContent);
-  });
-  const singboxContent = childSpan.traceChildSync('convert incoming ruleset to singbox', () => {
-    let _singBoxContent;
-    switch (type) {
-      case 'domainset':
-        _singBoxContent = surgeDomainsetToSingbox([MARK, ...content]);
-        break;
-      case 'ruleset':
-        _singBoxContent = surgeRulesetToSingbox([`DOMAIN,${MARK}`, ...content]);
-        break;
-      case 'ipcidr':
-      case 'ipcidr6':
-        _singBoxContent = ipCidrListToSingbox(content);
-        break;
-      default:
-        throw new TypeError(`Unknown type: ${type}`);
-    }
-    return stringify(_singBoxContent).split('\n');
-  });
+    const clashContent = childSpan.traceChildSync('convert incoming ruleset to clash', () => {
+      let _clashContent;
+      switch (type) {
+        case 'domainset':
+          _clashContent = [MARK, ...surgeDomainsetToClashDomainset(content)];
+          break;
+        case 'ruleset':
+          _clashContent = [`DOMAIN,${MARK}`, ...surgeRulesetToClashClassicalTextRuleset(processRuleSet(content))];
+          break;
+        case 'ipcidr':
+        case 'ipcidr6':
+          _clashContent = content;
+          break;
+        default:
+          throw new TypeError(`Unknown type: ${type}`);
+      }
+      return withBannerArray(title, description, date, _clashContent);
+    });
+    const singboxContent = childSpan.traceChildSync('convert incoming ruleset to singbox', () => {
+      let _singBoxContent;
+      switch (type) {
+        case 'domainset':
+          _singBoxContent = surgeDomainsetToSingbox([MARK, ...processRuleSet(content)]);
+          break;
+        case 'ruleset':
+          _singBoxContent = surgeRulesetToSingbox([`DOMAIN,${MARK}`, ...processRuleSet(content)]);
+          break;
+        case 'ipcidr':
+        case 'ipcidr6':
+          _singBoxContent = ipCidrListToSingbox(content);
+          break;
+        default:
+          throw new TypeError(`Unknown type: ${type}`);
+      }
+      return stringify(_singBoxContent).split('\n');
+    });
 
-  await Promise.all([
-    compareAndWriteFile(childSpan, surgeContent, surgePath),
-    compareAndWriteFile(childSpan, clashContent, clashPath),
-    compareAndWriteFile(childSpan, singboxContent, singBoxPath)
-  ]);
+    await Promise.all([
+      compareAndWriteFile(childSpan, surgeContent, surgePath),
+      compareAndWriteFile(childSpan, clashContent, clashPath),
+      compareAndWriteFile(childSpan, singboxContent, singBoxPath)
+    ]);
 
   // if (clashMrsPath) {
   //   if (type === 'domainset') {
@@ -260,4 +266,5 @@ export const createRuleset = (
   //     });
   //   }
   // }
-});
+  }
+);
