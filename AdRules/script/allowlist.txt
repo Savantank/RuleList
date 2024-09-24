@@ -1,5 +1,8 @@
 #!-白名单-!#
 
+#pronhub cdn
+evtubescms.phncdn.com
+
 #win天气 #202
 api.msn.com
 
