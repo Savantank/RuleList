@@ -4,8 +4,7 @@
 
 import { fastStringArrayJoin } from './misc';
 import util from 'node:util';
-
-const noop = () => { /** noop */ };
+import { noop } from 'foxact/noop';
 
 type TrieNode<Meta = any> = [
   boolean, /** sentinel */
@@ -93,19 +92,20 @@ export const createTrie = <Meta = any>(from?: string[] | Set<string> | null, smo
   const add = smolTree
     ? (suffix: string, meta?: Meta): void => {
       let node: TrieNode<Meta> = root;
+      let curNodeChildren: Map<string, TrieNode<Meta>> = node[2];
 
       const onToken = (token: string) => {
-        if (node[2].has(token)) {
-          node = node[2].get(token)!;
+        curNodeChildren = node[2];
+        if (curNodeChildren.has(token)) {
+          node = curNodeChildren.get(token)!;
 
-          // During the adding of `[start]blog|.skk.moe` and find out that there is a `[start].skk.moe` in the trie
-          // Dedupe the covered subdomain by skipping
-          if (token === '.' && node[0]) {
+          // During the adding of `[start]blog|.skk.moe` and find out that there is a `[start].skk.moe` in the trie, skip adding the rest of the node
+          if (node[0] && token === '.') {
             return true;
           }
         } else {
           const newNode = createNode(node);
-          node[2].set(token, newNode);
+          curNodeChildren.set(token, newNode);
           node = newNode;
         }
 
@@ -121,10 +121,8 @@ export const createTrie = <Meta = any>(from?: string[] | Set<string> | null, smo
       if (suffix[0] === '.') {
         // Trying to add `[start].sub.example.com` where there is already a `[start]blog.sub.example.com` in the trie
 
-        const parent = node[1]!;
-
         // Make sure parent `[start]sub.example.com` (without dot) is removed (SETINEL to false)
-        parent[0] = false;
+        (/** parent */ node[1]!)[0] = false;
 
         // Removing the rest of the parent's child nodes
         node[2].clear();
@@ -179,9 +177,9 @@ export const createTrie = <Meta = any>(from?: string[] | Set<string> | null, smo
     for (let i = tokens.length - 1; i >= 0; i--) {
       token = tokens[i];
 
-      if (token === '') {
-        break;
-      }
+      // if (token === '') {
+      //   break;
+      // }
 
       parent = node;
 
@@ -308,9 +306,9 @@ export const createTrie = <Meta = any>(from?: string[] | Set<string> | null, smo
     inputSuffix: string,
     /** @default true */ includeEqualWithSuffix = true
   ): string[] => {
-    if (smolTree) {
-      throw new Error('A Trie with smolTree enabled cannot perform find!');
-    }
+    // if (smolTree) {
+    //   throw new Error('A Trie with smolTree enabled cannot perform find!');
+    // }
 
     const inputTokens = hostnameToTokens(inputSuffix);
     const res = walkIntoLeafWithTokens(inputTokens);
@@ -419,8 +417,9 @@ export const createTrie = <Meta = any>(from?: string[] | Set<string> | null, smo
     if (tokens[0] === '.') {
       // If there is a `[start]sub.example.com` here, remove it
       parent[0] = false;
-      // Removing all the child nodes by disconnecting "."
-      parent[2].delete('.');
+      // Removing all the child nodes by empty the children
+      // This removes the only child ".", which removes "blog.sub.example.com"
+      parent[2].clear();
     }
 
     // Trying to whitelist `example.com` when there is already a `.example.com` in the trie
@@ -428,9 +427,6 @@ export const createTrie = <Meta = any>(from?: string[] | Set<string> | null, smo
     if (dotNode) {
       dotNode[0] = false;
     }
-    // if (dotNode?.s === true) {
-    //   dotnode[0] = false;
-    // }
 
     // return early if not found
     if (!node[0]) return;
