@@ -4,7 +4,7 @@ import process from 'node:process';
 
 import { processHosts, processFilterRules, processDomainLists } from './lib/parse-filter';
 
-import { HOSTS, ADGUARD_FILTERS, PREDEFINED_WHITELIST, DOMAIN_LISTS, HOSTS_EXTRA, DOMAIN_LISTS_EXTRA, ADGUARD_FILTERS_EXTRA, PHISHING_DOMAIN_LISTS_EXTRA } from './constants/reject-data-source';
+import { HOSTS, ADGUARD_FILTERS, PREDEFINED_WHITELIST, DOMAIN_LISTS, HOSTS_EXTRA, DOMAIN_LISTS_EXTRA, ADGUARD_FILTERS_EXTRA, PHISHING_DOMAIN_LISTS_EXTRA, PHISHING_HOSTS_EXTRA } from './constants/reject-data-source';
 import { compareAndWriteFile } from './lib/create-file';
 import { readFileByLine, readFileIntoProcessedArray } from './lib/fetch-text-by-line';
 import { task } from './trace';
@@ -44,7 +44,8 @@ export const buildRejectDomainSet = task(require.main === module, __filename)(as
       ...HOSTS_EXTRA.map(host => ` - ${host[0]}`),
       ...DOMAIN_LISTS_EXTRA.map(domainList => ` - ${domainList[0]}`),
       ...ADGUARD_FILTERS_EXTRA.map(filter => ` - ${Array.isArray(filter) ? filter[0] : filter}`),
-      ...PHISHING_DOMAIN_LISTS_EXTRA.map(domainList => ` - ${domainList[0]}`)
+      ...PHISHING_DOMAIN_LISTS_EXTRA.map(domainList => ` - ${domainList[0]}`),
+      ...PHISHING_HOSTS_EXTRA.map(host => ` - ${host[0]}`)
     ]);
 
   const appendArrayToRejectOutput = rejectOutput.addFromDomainset.bind(rejectOutput);
@@ -141,7 +142,7 @@ export const buildRejectDomainSet = task(require.main === module, __filename)(as
     }
 
     for (let i = 0, len = rejectOutput.$preprocessed.length; i < len; i++) {
-      rejectOutput.whitelistDomain(rejectOutput.$preprocessed[i]);
+      rejectExtraOutput.whitelistDomain(rejectOutput.$preprocessed[i]);
     }
   });
 

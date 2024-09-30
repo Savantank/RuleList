@@ -3,14 +3,14 @@ import { TTL } from '../lib/cache-filesystem';
 type HostsSource = [main: string, mirrors: string[] | null, includeAllSubDomain: boolean, ttl: number];
 
 export const HOSTS: HostsSource[] = [
-  // no coin list is not actively maintained, but it updates daily when being maintained, so we set a 3 days cache ttl
-  ['https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt', null, true, TTL.THREE_DAYS()],
+  // no coin list is not actively maintained
+  ['https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt', null, true, TTL.TWO_WEEKS()],
   // have not been updated for more than a year, so we set a 14 days cache ttl
   ['https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt', null, true, TTL.TWO_WEEKS()],
-  ['https://raw.githubusercontent.com/jerryn70/GoodbyeAds/master/Extension/GoodbyeAds-Xiaomi-Extension.txt', null, false, TTL.THREE_DAYS()],
-  ['https://raw.githubusercontent.com/jerryn70/GoodbyeAds/master/Extension/GoodbyeAds-Huawei-AdBlock.txt', null, false, TTL.THREE_DAYS()],
+  ['https://raw.githubusercontent.com/jerryn70/GoodbyeAds/master/Extension/GoodbyeAds-Xiaomi-Extension.txt', null, false, TTL.ONE_WEEK()],
+  ['https://raw.githubusercontent.com/jerryn70/GoodbyeAds/master/Extension/GoodbyeAds-Huawei-AdBlock.txt', null, false, TTL.ONE_WEEK()],
   ['https://raw.githubusercontent.com/durablenapkin/block/master/luminati.txt', null, true, TTL.THREE_HOURS()],
-  ['https://raw.githubusercontent.com/durablenapkin/block/refs/heads/master/tvstream.txt', null, true, TTL.THREE_HOURS()]
+  ['https://raw.githubusercontent.com/durablenapkin/block/master/tvstream.txt', null, true, TTL.THREE_HOURS()]
 ];
 
 export const HOSTS_EXTRA: HostsSource[] = [
@@ -24,7 +24,7 @@ export const HOSTS_EXTRA: HostsSource[] = [
   // Dan Pollock's hosts file, 0.0.0.0 version is 30 KiB smaller
   ['https://someonewhocares.org/hosts/zero/hosts', null, true, TTL.THREE_HOURS()],
   // ad-wars is not actively maintained, so we set a 7 days cache ttl
-  ['https://raw.githubusercontent.com/jdlingyu/ad-wars/master/hosts', null, false, TTL.ONE_WEEK()]
+  ['https://raw.githubusercontent.com/jdlingyu/ad-wars/master/hosts', null, false, TTL.TWO_WEEKS()]
 ];
 
 export const DOMAIN_LISTS: HostsSource[] = [
@@ -73,7 +73,7 @@ export const DOMAIN_LISTS_EXTRA: HostsSource[] = [
   ['https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt', [], true, TTL.TEN_DAYS()]
 ];
 
-export const PHISHING_DOMAIN_LISTS_EXTRA: [HostsSource, HostsSource] = [
+export const PHISHING_DOMAIN_LISTS_EXTRA: HostsSource[] = [
   [
     'https://curbengh.github.io/phishing-filter/phishing-filter-domains.txt',
     [
@@ -86,6 +86,14 @@ export const PHISHING_DOMAIN_LISTS_EXTRA: [HostsSource, HostsSource] = [
     'https://phishing.army/download/phishing_army_blocklist.txt',
     [],
     true, TTL.THREE_HOURS()
+  ]
+];
+
+export const PHISHING_HOSTS_EXTRA: HostsSource[] = [
+  [
+    'https://raw.githubusercontent.com/durablenapkin/scamblocklist/refs/heads/master/hosts.txt',
+    [],
+    true, TTL.TWLVE_HOURS()
   ]
 ];
 
@@ -151,7 +159,7 @@ export const ADGUARD_FILTERS: AdGuardFilterSource[] = [
 
 export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
   // AdGuard Annoyances filter
-  ['https://filters.adtidy.org/android/filters/14_optimized.txt', null, TTL.THREE_HOURS(), true],
+  ['https://filters.adtidy.org/extension/ublock/filters/14_optimized.txt', null, TTL.THREE_HOURS(), true],
   // AdGuard Cookie Notices
   ['https://filters.adtidy.org/extension/ublock/filters/18_optimized.txt', null, TTL.THREE_HOURS(), true],
   // EasyList Germany filter
@@ -224,6 +232,8 @@ export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
     ],
     TTL.THREE_HOURS()
   ],
+  // Dandelion Sprout's Annoyances
+  ['https://filters.adtidy.org/extension/ublock/filters/250_optimized.txt', null, TTL.THREE_HOURS(), true],
   // EasyList - Newsletters
   [
     'https://ublockorigin.github.io/uAssetsCDN/thirdparties/easylist-newsletters.txt',
@@ -247,6 +257,12 @@ export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
       'https://ublockorigin.pages.dev/thirdparties/easylist-cookies.txt',
       'https://secure.fanboy.co.nz/fanboy-cookiemonster_ubo.txt'
     ],
+    TTL.TWLVE_HOURS()
+  ],
+  // Bypass Paywall Cleaner
+  [
+    'https://gitflic.ru/project/magnolia1234/bypass-paywalls-clean-filters/blob/raw?file=bpc-paywall-filter.txt',
+    [],
     TTL.TWLVE_HOURS()
   ]
 ];
