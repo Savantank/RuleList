@@ -1,5 +1,8 @@
 #!-白名单-!#
 
+#jameswoof 游戏
+app.jameswoof.com
+
 #pronhub cdn
 evtubescms.phncdn.com
 
