@@ -3,8 +3,6 @@ import { TTL } from '../lib/cache-filesystem';
 type HostsSource = [main: string, mirrors: string[] | null, includeAllSubDomain: boolean, ttl: number];
 
 export const HOSTS: HostsSource[] = [
-  // no coin list is not actively maintained
-  ['https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt', null, true, TTL.TWO_WEEKS()],
   // have not been updated for more than a year, so we set a 14 days cache ttl
   ['https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt', null, true, TTL.TWO_WEEKS()],
   ['https://raw.githubusercontent.com/jerryn70/GoodbyeAds/master/Extension/GoodbyeAds-Xiaomi-Extension.txt', null, false, TTL.ONE_WEEK()],
@@ -91,7 +89,7 @@ export const PHISHING_DOMAIN_LISTS_EXTRA: HostsSource[] = [
 
 export const PHISHING_HOSTS_EXTRA: HostsSource[] = [
   [
-    'https://raw.githubusercontent.com/durablenapkin/scamblocklist/refs/heads/master/hosts.txt',
+    'https://raw.githubusercontent.com/durablenapkin/scamblocklist/master/hosts.txt',
     [],
     true, TTL.TWLVE_HOURS()
   ]
@@ -100,14 +98,16 @@ export const PHISHING_HOSTS_EXTRA: HostsSource[] = [
 type AdGuardFilterSource = [main: string, mirrors: string[] | null, ttl: number, allowThirdParty?: boolean];
 
 export const ADGUARD_FILTERS: AdGuardFilterSource[] = [
+  // no coin list adguard list is more maintained than its hosts
+  ['https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt', [], TTL.TWO_WEEKS()],
   // EasyList
   [
     'https://easylist.to/easylist/easylist.txt',
     [
-      'https://ublockorigin.github.io/uAssetsCDN/thirdparties/easylist.txt',
-      'https://ublockorigin.pages.dev/thirdparties/easylist.txt',
       'https://easylist-downloads.adblockplus.org/easylist.txt',
       'https://secure.fanboy.co.nz/easylist.txt',
+      'https://ublockorigin.github.io/uAssetsCDN/thirdparties/easylist.txt',
+      'https://ublockorigin.pages.dev/thirdparties/easylist.txt',
       'https://raw.githubusercontent.com/easylist/easylist/gh-pages/easylist.txt'
     ],
     TTL.TWLVE_HOURS()
@@ -116,11 +116,11 @@ export const ADGUARD_FILTERS: AdGuardFilterSource[] = [
   [
     'https://easylist.to/easylist/easyprivacy.txt',
     [
-      'https://secure.fanboy.co.nz/easyprivacy.txt',
-      'https://raw.githubusercontent.com/easylist/easylist/gh-pages/easyprivacy.txt',
       'https://easylist-downloads.adblockplus.org/easyprivacy.txt',
+      'https://secure.fanboy.co.nz/easyprivacy.txt',
       'https://ublockorigin.github.io/uAssetsCDN/thirdparties/easyprivacy.txt',
-      'https://ublockorigin.pages.dev/thirdparties/easyprivacy.txt'
+      'https://ublockorigin.pages.dev/thirdparties/easyprivacy.txt',
+      'https://raw.githubusercontent.com/easylist/easylist/gh-pages/easyprivacy.txt'
     ],
     TTL.TWLVE_HOURS()
   ],
@@ -153,23 +153,46 @@ export const ADGUARD_FILTERS: AdGuardFilterSource[] = [
     ],
     TTL.TEN_DAYS()
   ],
-  // Brave First Party & First Party CNAME
-  ['https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/brave-firstparty.txt', null, TTL.ONE_DAY()]
+  // uBlock Origin Unbreak
+  [
+    'https://ublockorigin.github.io/uAssetsCDN/filters/unbreak.min.txt',
+    [
+      'https://ublockorigin.pages.dev/filters/unbreak.min.txt'
+    ],
+    TTL.THREE_HOURS()
+  ]
+];
+
+export const ADGUARD_FILTERS_WHITELIST: AdGuardFilterSource[] = [
+  [
+    'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/exceptions.txt',
+    [
+      'https://raw.githubusercontent.com/AdguardTeam/AdGuardSDNSFilter/master/Filters/exceptions.txt'
+    ],
+    TTL.THREE_HOURS()
+  ],
+  [
+    'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/exclusions.txt',
+    [
+      'https://raw.githubusercontent.com/AdguardTeam/AdGuardSDNSFilter/master/Filters/exclusions.txt'
+    ],
+    TTL.THREE_HOURS()
+  ]
 ];
 
 export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
   // AdGuard Annoyances filter
   ['https://filters.adtidy.org/extension/ublock/filters/14_optimized.txt', null, TTL.THREE_HOURS(), true],
-  // AdGuard Cookie Notices
-  ['https://filters.adtidy.org/extension/ublock/filters/18_optimized.txt', null, TTL.THREE_HOURS(), true],
-  // EasyList Germany filter
-  [
-    'https://easylist.to/easylistgermany/easylistgermany.txt',
-    [
-      'https://easylist-downloads.adblockplus.org/easylistgermany.txt'
-    ],
-    TTL.TWLVE_HOURS()
-  ],
+  // AdGuard Cookie Notices, included in Annoyances filter
+  // ['https://filters.adtidy.org/extension/ublock/filters/18_optimized.txt', null, TTL.THREE_HOURS(), true],
+  // EasyList Germany filter, not even included in extra for now
+  // [
+  //   'https://easylist.to/easylistgermany/easylistgermany.txt',
+  //   [
+  //     'https://easylist-downloads.adblockplus.org/easylistgermany.txt'
+  //   ],
+  //   TTL.TWLVE_HOURS()
+  // ],
   // AdGuard Japanese filter
   ['https://filters.adtidy.org/extension/ublock/filters/7_optimized.txt', null, TTL.THREE_HOURS()],
   // uBlock Origin Filter List
@@ -180,8 +203,8 @@ export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
     ],
     TTL.THREE_HOURS()
   ],
-  // AdGuard Popup Overlay
-  ['https://filters.adtidy.org/extension/ublock/filters/19_optimized.txt', null, TTL.THREE_HOURS(), true],
+  // AdGuard Popup Overlay - included in Annoyances filter
+  // ['https://filters.adtidy.org/extension/ublock/filters/19_optimized.txt', null, TTL.THREE_HOURS(), true],
   // AdGuard Mobile Banner
   // almost all generic rule
   // ['https://filters.adtidy.org/extension/ublock/filters/20_optimized.txt', null, TTL.THREE_HOURS()],
@@ -208,14 +231,6 @@ export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
   //     'https://ublockorigin.pages.dev/filters/resource-abuse.txt'
   //   ]
   // ],
-  // uBlock Origin Unbreak
-  [
-    'https://ublockorigin.github.io/uAssetsCDN/filters/unbreak.min.txt',
-    [
-      'https://ublockorigin.pages.dev/filters/unbreak.min.txt'
-    ],
-    TTL.THREE_HOURS()
-  ],
   // uBlock Origin Annoyances
   [
     'https://ublockorigin.github.io/uAssetsCDN/filters/annoyances.min.txt',
@@ -263,7 +278,7 @@ export const ADGUARD_FILTERS_EXTRA: AdGuardFilterSource[] = [
   [
     'https://gitflic.ru/project/magnolia1234/bypass-paywalls-clean-filters/blob/raw?file=bpc-paywall-filter.txt',
     [],
-    TTL.TWLVE_HOURS()
+    TTL.ONE_DAY()
   ]
 ];
 
@@ -280,6 +295,7 @@ export const PREDEFINED_WHITELIST = [
   '.ip6-allhosts',
   '.mcastprefix',
   '.skk.moe',
+  '.cdn.cloudflare.net', // Surge/Clash doesn't support CNAME
   'analytics.google.com',
   '.cloud.answerhub.com',
   'ae01.alicdn.com',
