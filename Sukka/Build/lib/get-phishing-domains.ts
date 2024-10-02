@@ -29,7 +29,7 @@ const BLACK_TLD = new Set([
   'one', 'online',
   'party', 'pro', 'pl', 'pw',
   'racing', 'rest', 'review', 'rf.gd',
-  'sa.com', 'sbs', 'science', 'shop', 'site', 'skin', 'space', 'store', 'stream', 'surf',
+  'sa.com', 'sbs', 'science', 'shop', 'site', 'skin', 'space', 'store', 'stream', 'su', 'surf',
   'tech', 'tk', 'tokyo', 'top', 'trade',
   'vip', 'vn',
   'webcam', 'website', 'win',
@@ -51,35 +51,37 @@ const WHITELIST_MAIN_DOMAINS = new Set([
 ]);
 
 const sensitiveKeywords = createKeywordFilter([
-  '-roblox',
   '.amazon-',
   '-amazon',
   'fb-com',
-  'facebook.',
-  'facebook-',
   'facebook-com',
-  '.facebook',
   '-facebook',
-  'coinbase',
+  'facebook-',
   'metamask-',
   '-metamask',
-  'virus-',
-  'icloud-',
-  'apple-',
   'www.apple',
   '-coinbase',
   'coinbase-',
-  'lcloud.',
-  'lcloud-',
   'booking-com',
   'booking.com-',
   'booking-eu',
   'vinted-cz',
   'inpost-pl',
   'login.microsoft',
-  'login-microsoft'
+  'login-microsoft',
+  'google.com-'
 ]);
 const lowKeywords = createKeywordFilter([
+  'transactions-',
+  'payment-',
+  '-transactions',
+  '-payment',
+  '-faceb', // facebook fake
+  '.faceb', // facebook fake
+  'virus-',
+  'icloud-',
+  'apple-',
+  '-roblox',
   '-co-jp',
   'customer.',
   'customer-',
@@ -88,7 +90,8 @@ const lowKeywords = createKeywordFilter([
   '.www2',
   'instagram',
   'microsoft',
-  'passwordreset'
+  'passwordreset',
+  '.google-'
 ]);
 
 const cacheKey = createCacheKey(__filename);
@@ -152,18 +155,12 @@ async function processPhihsingDomains(domainArr: string[]) {
           } else if (tld.length > 6) {
             domainScoreMap[apexDomain] += 2;
           }
-
-          if (sensitiveKeywords(apexDomain)) {
-            domainScoreMap[apexDomain] += 4;
-          } else if (lowKeywords(apexDomain)) {
-            domainScoreMap[apexDomain] += 2;
-          }
         }
         if (
           subdomain
           && !WHITELIST_MAIN_DOMAINS.has(apexDomain)
         ) {
-          domainScoreMap[apexDomain] += calcDomainAbuseScore(subdomain);
+          domainScoreMap[apexDomain] += calcDomainAbuseScore(subdomain, line);
         }
       }
 
@@ -179,8 +176,8 @@ async function processPhihsingDomains(domainArr: string[]) {
       }
 
       // console.log({
-      //   count: domainCountMap['digital-marketing-insights.icu'],
-      //   score: domainScoreMap['digital-marketing-insights.icu']
+      //   count: domainCountMap['google.com'],
+      //   score: domainScoreMap['google.com']
       // });
 
       return Promise.resolve(domainArr);
@@ -194,19 +191,19 @@ async function processPhihsingDomains(domainArr: string[]) {
   );
 }
 
-export function calcDomainAbuseScore(subdomain: string) {
+export function calcDomainAbuseScore(subdomain: string, fullDomain: string) {
   let weight = 0;
 
-  const hitLowKeywords = lowKeywords(subdomain);
-  const sensitiveKeywordsHit = sensitiveKeywords(subdomain);
+  const hitLowKeywords = lowKeywords(fullDomain);
+  const sensitiveKeywordsHit = sensitiveKeywords(fullDomain);
 
   if (sensitiveKeywordsHit) {
-    weight += 8;
+    weight += 9;
     if (hitLowKeywords) {
-      weight += 4;
+      weight += 5;
     }
   } else if (hitLowKeywords) {
-    weight += 1;
+    weight += 1.5;
   }
 
   const subdomainLength = subdomain.length;
