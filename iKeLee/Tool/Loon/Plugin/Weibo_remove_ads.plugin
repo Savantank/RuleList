@@ -5,10 +5,10 @@
 #!tag = 去广告
 #!system = 
 #!system_version = 
-#!loon_version = 3.2.1(745)
+#!loon_version = 3.2.1(749)
 #!homepage = https://github.com/luestr/ProxyResource/blob/main/README.md
 #!icon = https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weibo.png
-#!date = 2024-09-09 12:53:56
+#!date = 2024-10-02 11:15:56
 
 [Rule]
 # 请求放行
