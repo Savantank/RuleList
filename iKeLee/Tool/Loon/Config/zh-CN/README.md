@@ -32,3 +32,7 @@
 4. 添加你的订阅；
 
 5. 打开Loon的开关开始冲浪！
+
+### 配置图解
+
+![ConfigurationDiagram](https://raw.githubusercontent.com/luestr/ProxyResource/main/Tool/Loon/Config/zh-CN/Resource/ConfigurationDiagram.png)
