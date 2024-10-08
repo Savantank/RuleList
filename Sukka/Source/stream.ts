@@ -114,7 +114,7 @@ const APPLE_MUSIC_TV: StreamService = {
 const BAHAMUT: StreamService = {
   name: 'Bahamut',
   rules: [
-    'DOMAIN,bahamut.akamaized.net',
+    // 'DOMAIN,bahamut.akamaized.net', // Akamai based CDN, no geoblock at all
     'DOMAIN,gamer-cds.cdn.hinet.net',
     'DOMAIN,gamer2-cds.cdn.hinet.net',
 
@@ -130,6 +130,7 @@ const BAHAMUT: StreamService = {
 const BBC: StreamService = {
   name: 'BBC',
   rules: [
+    'DOMAIN-SUFFIX,tvlicensing.co.uk',
     'DOMAIN-KEYWORD,bbcfmt',
     'DOMAIN-KEYWORD,uk-live',
 
@@ -146,7 +147,8 @@ const BILIBILI_INTL: StreamService = {
     'DOMAIN-SUFFIX,biliintl.com',
     'DOMAIN,apm-misaka.biliapi.net',
     'DOMAIN,upos-bstar-mirrorakam.akamaized.net',
-    'DOMAIN,upos-bstar1-mirrorakam.akamaized.net',
+    'DOMAIN,upos-bstar1-mirrorakam.akamaized.net', // geoblocking
+    // upos-sz-mirroralibstar1.bilivideo.com, from domain bilivideo.com and without geoblocking
     'DOMAIN-SUFFIX,bilibili.tv',
     'PROCESS-NAME,com.bstar.intl'
   ]
@@ -358,7 +360,6 @@ const ITV: StreamService = {
     'DOMAIN,itvpnpmobile-a.akamaihd.net',
 
     'DOMAIN-SUFFIX,itv.com',
-    'DOMAIN-SUFFIX,itvstatic.com',
 
     'USER-AGENT,ITV_Player*'
   ]
@@ -881,9 +882,8 @@ export const TW: StreamService[] = [
   // HamiVideo
   // CatchPlay
   HBO_ASIA,
-  BAHAMUT,
+  BAHAMUT
   // elevensportstw
-  BILIBILI_INTL
 ];
 
 export const JP: StreamService[] = [
