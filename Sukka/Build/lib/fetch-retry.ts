@@ -2,9 +2,9 @@ import retry from 'async-retry';
 import picocolors from 'picocolors';
 import { setTimeout } from 'node:timers/promises';
 
-import { setGlobalDispatcher, Agent } from 'undici';
+import { setGlobalDispatcher, EnvHttpProxyAgent } from 'undici';
 
-setGlobalDispatcher(new Agent({ allowH2: true }));
+setGlobalDispatcher(new EnvHttpProxyAgent({ allowH2: true }));
 
 function isClientError(err: unknown): err is NodeJS.ErrnoException {
   if (!err || typeof err !== 'object') return false;
@@ -89,7 +89,7 @@ function createFetchRetry($fetch: typeof fetch): FetchWithRetry {
             }
             throw new ResponseError(res);
           } else {
-            if (!res.ok && retryOpts.retryOnNon2xx) {
+            if ((!res.ok && res.status !== 304) && retryOpts.retryOnNon2xx) {
               throw new ResponseError(res);
             }
             return res;
@@ -106,8 +106,10 @@ function createFetchRetry($fetch: typeof fetch): FetchWithRetry {
             return bail(err) as never;
           }
 
-          console.log(picocolors.gray('[fetch fail]'), url);
-          throw err;
+          console.log(picocolors.gray('[fetch fail]'), url, err);
+          const newErr = new Error('Fetch failed');
+          newErr.cause = err;
+          throw newErr;
         }
       }, retryOpts);
     } catch (err) {
