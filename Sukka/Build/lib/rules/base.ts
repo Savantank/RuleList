@@ -27,9 +27,10 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
   protected ipcidr6NoResolve = new Set<string>();
   protected geoip = new Set<string>();
   protected groipNoResolve = new Set<string>();
-  // TODO: add sourceIpcidr
-  // TODO: add sourcePort
-  // TODO: add port
+
+  protected sourceIpOrCidr = new Set<string>();
+  protected sourcePort = new Set<string>();
+  protected destPort = new Set<string>();
 
   protected otherRules: string[] = [];
   protected abstract type: 'domainset' | 'non_ip' | 'ip';
@@ -125,6 +126,7 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
   }
 
   private async addFromDomainsetPromise(source: AsyncIterable<string> | Iterable<string> | string[]) {
+    // eslint-disable-next-line @typescript-eslint/await-thenable -- https://github.com/typescript-eslint/typescript-eslint/issues/10080
     for await (const line of source) {
       if (line[0] === '.') {
         this.addDomainSuffix(line);
@@ -140,6 +142,7 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
   }
 
   private async addFromRulesetPromise(source: AsyncIterable<string> | Iterable<string>) {
+    // eslint-disable-next-line @typescript-eslint/await-thenable -- https://github.com/typescript-eslint/typescript-eslint/issues/10080
     for await (const line of source) {
       const splitted = line.split(',');
       const type = splitted[0];
@@ -185,6 +188,15 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
           break;
         case 'GEOIP':
           (arg === 'no-resolve' ? this.groipNoResolve : this.geoip).add(value);
+          break;
+        case 'SRC-IP':
+          this.sourceIpOrCidr.add(value);
+          break;
+        case 'SRC-PORT':
+          this.sourcePort.add(value);
+          break;
+        case 'DEST-PORT':
+          this.destPort.add(value);
           break;
         default:
           this.otherRules.push(line);
@@ -314,7 +326,7 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
   abstract mitmSgmodule?(): string[] | null;
 }
 
-export const fileEqual = async (linesA: string[], source: AsyncIterable<string>): Promise<boolean> => {
+export async function fileEqual(linesA: string[], source: AsyncIterable<string>): Promise<boolean> {
   if (linesA.length === 0) {
     return false;
   }
@@ -350,7 +362,7 @@ export const fileEqual = async (linesA: string[], source: AsyncIterable<string>)
 
   // The file becomes larger
   return !(index < linesA.length - 1);
-};
+}
 
 export async function compareAndWriteFile(span: Span, linesA: string[], filePath: string) {
   let isEqual = true;

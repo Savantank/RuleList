@@ -1,16 +1,14 @@
 import retry from 'async-retry';
 import picocolors from 'picocolors';
 import { setTimeout } from 'node:timers/promises';
-
-import { setGlobalDispatcher, EnvHttpProxyAgent } from 'undici';
-
-setGlobalDispatcher(new EnvHttpProxyAgent({ allowH2: true }));
+import { fetch as _fetch } from 'undici';
 
 function isClientError(err: unknown): err is NodeJS.ErrnoException {
   if (!err || typeof err !== 'object') return false;
 
   if ('code' in err) return err.code === 'ERR_UNESCAPED_CHARACTERS';
   if ('message' in err) return err.message === 'Request path contains unescaped characters';
+  if ('name' in err) return err.name === 'DOMException' || err.name === 'AbortError';
 
   return false;
 }
@@ -44,7 +42,8 @@ interface FetchRetryOpt {
   maxRetryAfter?: number,
   // onRetry?: (err: Error) => void,
   retryOnAborted?: boolean,
-  retryOnNon2xx?: boolean
+  retryOnNon2xx?: boolean,
+  retryOn404?: boolean
 }
 
 interface FetchWithRetry {
@@ -59,7 +58,8 @@ const DEFAULT_OPT: Required<FetchRetryOpt> = {
   factor: 6,
   maxRetryAfter: 20,
   retryOnAborted: false,
-  retryOnNon2xx: true
+  retryOnNon2xx: true,
+  retryOn404: false
 };
 
 function createFetchRetry($fetch: typeof fetch): FetchWithRetry {
@@ -95,23 +95,51 @@ function createFetchRetry($fetch: typeof fetch): FetchWithRetry {
             return res;
           }
         } catch (err: unknown) {
-          if (err instanceof Error && (
-            err.name === 'AbortError'
-            || ('digest' in err && err.digest === 'AbortError')
-          ) && !retryOpts.retryOnAborted) {
-            console.log(picocolors.gray('[fetch abort]'), url);
+          if (mayBailError(err)) {
             return bail(err) as never;
+          };
+
+          if (err instanceof AggregateError) {
+            for (const e of err.errors) {
+              if (mayBailError(e)) {
+                // bail original error
+                return bail(err) as never;
+              };
+            }
           }
-          if (isClientError(err)) {
+
+          console.log(picocolors.gray('[fetch fail]'), url, { name: (err as any).name }, err);
+
+          // Do not retry on 404
+          if (err instanceof ResponseError && err.res.status === 404) {
             return bail(err) as never;
           }
 
-          console.log(picocolors.gray('[fetch fail]'), url, err);
           const newErr = new Error('Fetch failed');
           newErr.cause = err;
           throw newErr;
         }
       }, retryOpts);
+
+      function mayBailError(err: unknown) {
+        if (typeof err === 'object' && err !== null && 'name' in err) {
+          if ((
+            err.name === 'AbortError'
+            || ('digest' in err && err.digest === 'AbortError')
+          ) && !retryOpts.retryOnAborted) {
+            console.log(picocolors.gray('[fetch abort]'), url);
+            return true;
+          }
+          if (err.name === 'Custom304NotModifiedError') {
+            return true;
+          }
+          if (err.name === 'CustomNoETagFallbackError') {
+            return true;
+          }
+        }
+
+        return !!(isClientError(err));
+      };
     } catch (err) {
       if (err instanceof ResponseError) {
         return err.res;
@@ -134,4 +162,4 @@ export const defaultRequestInit: RequestInit = {
   }
 };
 
-export const fetchWithRetry = createFetchRetry(fetch);
+export const fetchWithRetry = createFetchRetry(_fetch as any);
