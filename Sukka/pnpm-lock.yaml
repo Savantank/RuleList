@@ -26,6 +26,12 @@ importers:
       better-sqlite3:
         specifier: ^11.3.0
         version: 11.3.0
+      cacache:
+        specifier: ^19.0.1
+        version: 19.0.1
+      cacheable-lookup:
+        specifier: ^6.1.0
+        version: 6.1.0
       ci-info:
         specifier: ^4.0.0
         version: 4.0.0
@@ -96,6 +102,9 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.11
         version: 7.6.11
+      '@types/cacache':
+        specifier: ^17.0.2
+        version: 17.0.2
       '@types/chai':
         specifier: ^4.3.20
         version: 4.3.20
@@ -469,6 +478,9 @@ packages:
   '@types/better-sqlite3@7.6.11':
     resolution: {integrity: sha512-i8KcD3PgGtGBLl3+mMYA8PdKkButvPyARxA7IQAd6qeslht13qxb1zzO8dRCtE7U3IoJS782zDBAeoKiM695kg==}
 
+  '@types/cacache@17.0.2':
+    resolution: {integrity: sha512-IrqHzVX2VRMDQQKa7CtKRnuoCLdRJiLW6hWU+w7i7+AaQ0Ii5bKwJxd5uRK4zBCyrHd3tG6G8zOm2LplxbSfQg==}
+
   '@types/chai@4.3.20':
     resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
 
@@ -729,6 +741,10 @@ packages:
   cacache@19.0.1:
     resolution: {integrity: sha512-hdsUxulXCi5STId78vRVYEtDAjq99ICAUktLTeTYsLoTE6Z8dS0c8pWNCxwdrk9YfJeobDZc2Y186hD/5ZQgFQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
+
+  cacheable-lookup@6.1.0:
+    resolution: {integrity: sha512-KJ/Dmo1lDDhmW2XDPMo+9oiy/CeqosPguPCrgcVzKyZrL6pM1gU2GmPY/xo6OQPTUaA/c0kwHuywB4E6nmT9ww==}
+    engines: {node: '>=10.6.0'}
 
   call-me-maybe@1.0.2:
     resolution: {integrity: sha512-HpX65o1Hnr9HH25ojC1YGs7HCQLq0GCOibSaWER0eNpgJ/Z1MZv2mTc7+xh6WOPxbRVcmgbv4hGU+uSQ/2xFZQ==}
@@ -2187,6 +2203,10 @@ snapshots:
     dependencies:
       '@types/node': 22.7.5
 
+  '@types/cacache@17.0.2':
+    dependencies:
+      '@types/node': 22.7.5
+
   '@types/chai@4.3.20': {}
 
   '@types/chrome@0.0.270':
@@ -2501,6 +2521,8 @@ snapshots:
       ssri: 12.0.0
       tar: 7.4.3
       unique-filename: 4.0.0
+
+  cacheable-lookup@6.1.0: {}
 
   call-me-maybe@1.0.2: {}
 
