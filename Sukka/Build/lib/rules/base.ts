@@ -12,7 +12,7 @@ import { readFileByLine } from '../fetch-text-by-line';
 import { asyncWriteToStream } from '../async-write-to-stream';
 
 export abstract class RuleOutput<TPreprocessed = unknown> {
-  protected domainTrie = createTrie<string>(null, true);
+  protected domainTrie = createTrie(null, true);
   protected domainKeywords = new Set<string>();
   protected domainWildcard = new Set<string>();
   protected userAgent = new Set<string>();
@@ -88,16 +88,8 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
     return this;
   }
 
-  protected apexDomainMap: Map<string, string> | null = null;
-  protected subDomainMap: Map<string, string> | null = null;
-  withDomainMap(apexDomainMap: Map<string, string>, subDomainMap: Map<string, string>) {
-    this.apexDomainMap = apexDomainMap;
-    this.subDomainMap = subDomainMap;
-    return this;
-  }
-
   addDomain(domain: string) {
-    this.domainTrie.add(domain, domain);
+    this.domainTrie.add(domain);
     return this;
   }
 
@@ -109,7 +101,8 @@ export abstract class RuleOutput<TPreprocessed = unknown> {
   }
 
   addDomainSuffix(domain: string) {
-    return this.addDomain(domain[0] === '.' ? domain : '.' + domain);
+    this.domainTrie.add(domain, true);
+    return this;
   }
 
   bulkAddDomainSuffix(domains: string[]) {

@@ -8,8 +8,13 @@ import { fastStringArrayJoin, identity, mergeHeaders } from './misc';
 import { performance } from 'node:perf_hooks';
 import fs from 'node:fs';
 import { stringHash } from './string-hash';
-import { defaultRequestInit, fetchWithRetry } from './fetch-retry';
-import { Custom304NotModifiedError, CustomAbortError, CustomNoETagFallbackError, fetchAssets, sleepWithAbort } from './fetch-assets';
+import { defaultRequestInit, fetchWithLog, ResponseError } from './fetch-retry';
+// import type { UndiciResponseData } from './fetch-retry';
+import { Custom304NotModifiedError, CustomAbortError, CustomNoETagFallbackError, fetchAssetsWithout304, sleepWithAbort } from './fetch-assets';
+
+import type { Response } from 'undici';
+import type { IncomingHttpHeaders } from 'undici/types/header';
+import { Headers } from 'undici';
 
 const enum CacheStatus {
   Hit = 'hit',
@@ -65,6 +70,20 @@ export const TTL = {
   TEN_DAYS: () => randomInt(7, 10) * ONE_DAY,
   TWO_WEEKS: () => randomInt(10, 14) * ONE_DAY
 };
+
+function ensureETag(headers: IncomingHttpHeaders | Headers) {
+  if (headers instanceof Headers && headers.has('etag')) {
+    return headers.get('etag');
+  }
+
+  if ('etag' in headers && typeof headers.etag === 'string' && headers.etag.length > 0) {
+    return headers.etag;
+  }
+  if ('ETag' in headers && typeof headers.ETag === 'string' && headers.ETag.length > 0) {
+    return headers.ETag;
+  }
+  return null;
+}
 
 export class Cache<S = string> {
   db: Database;
@@ -212,11 +231,11 @@ export class Cache<S = string> {
     url: string,
     extraCacheKey: string,
     fn: (resp: Response) => Promise<T>,
-    opt: Omit<CacheApplyOption<T, S>, 'incrementTtlWhenHit'>,
-    requestInit?: RequestInit
+    opt: Omit<CacheApplyOption<T, S>, 'incrementTtlWhenHit'>
+    // requestInit?: RequestInit
   ): Promise<T> {
     if (opt.temporaryBypass) {
-      return fn(await fetchWithRetry(url, requestInit ?? defaultRequestInit));
+      return fn(await fetchWithLog(url));
     }
 
     const baseKey = url + '$' + extraCacheKey;
@@ -230,8 +249,8 @@ export class Cache<S = string> {
 
       const value = await fn(resp);
 
-      if (resp.headers.has('ETag')) {
-        let serverETag = resp.headers.get('ETag')!;
+      let serverETag = ensureETag(resp.headers);
+      if (serverETag) {
         // FUCK someonewhocares.org
         if (url.includes('someonewhocares.org')) {
           serverETag = serverETag.replace('-gzip', '');
@@ -255,24 +274,21 @@ export class Cache<S = string> {
 
     const cached = this.get(cachedKey);
     if (cached == null) {
-      return onMiss(await fetchWithRetry(url, requestInit ?? defaultRequestInit));
+      return onMiss(await fetchWithLog(url));
     }
 
-    const resp = await fetchWithRetry(
+    const resp = await fetchWithLog(
       url,
       {
-        ...(requestInit ?? defaultRequestInit),
+        ...defaultRequestInit,
         headers: (typeof etag === 'string' && etag.length > 0)
-          ? mergeHeaders(
-            (requestInit ?? defaultRequestInit).headers,
-            { 'If-None-Match': etag }
-          )
-          : (requestInit ?? defaultRequestInit).headers
+          ? mergeHeaders<Record<string, string>>(defaultRequestInit.headers, { 'If-None-Match': etag })
+          : defaultRequestInit.headers
       }
     );
 
     // Only miss if previously a ETag was present and the server responded with a 304
-    if (resp.headers.has('ETag') && resp.status !== 304) {
+    if (!ensureETag(resp.headers) && resp.status !== 304) {
       return onMiss(resp);
     }
 
@@ -291,7 +307,7 @@ export class Cache<S = string> {
     opt: Omit<CacheApplyOption<T, S>, 'incrementTtlWhenHit'>
   ): Promise<T> {
     if (opt.temporaryBypass) {
-      return fn(await fetchAssets(primaryUrl, mirrorUrls));
+      return fn(await fetchAssetsWithout304(primaryUrl, mirrorUrls));
     }
 
     if (mirrorUrls.length === 0) {
@@ -301,6 +317,7 @@ export class Cache<S = string> {
     const baseKey = primaryUrl + '$' + extraCacheKey;
     const getETagKey = (url: string) => baseKey + '$' + url + '$etag';
     const cachedKey = baseKey + '$cached';
+
     const controller = new AbortController();
 
     const previouslyCached = this.get(cachedKey);
@@ -321,36 +338,41 @@ export class Cache<S = string> {
       }
 
       const etag = this.get(getETagKey(url));
-      const res = await fetchWithRetry(
+      const res = await fetchWithLog(
         url,
         {
           signal: controller.signal,
           ...defaultRequestInit,
-          headers: (typeof etag === 'string' && etag.length > 0)
-            ? mergeHeaders(
-              defaultRequestInit.headers,
-              { 'If-None-Match': etag }
-            )
+          headers: (typeof etag === 'string' && etag.length > 0 && typeof previouslyCached === 'string' && previouslyCached.length > 1)
+            ? mergeHeaders<Record<string, string>>(defaultRequestInit.headers, { 'If-None-Match': etag })
             : defaultRequestInit.headers
         }
       );
 
-      if (res.headers.has('etag')) {
-        this.set(getETagKey(url), res.headers.get('etag')!, TTL.ONE_WEEK_STATIC);
-
-        // If we do not have a cached value, we ignore 304
-        if (res.status === 304 && typeof previouslyCached === 'string') {
-          controller.abort();
-          throw new Custom304NotModifiedError(url, previouslyCached);
-        }
-      } else if (!this.get(getETagKey(primaryUrl)) && typeof previouslyCached === 'string') {
-        controller.abort();
-        throw new CustomNoETagFallbackError(previouslyCached);
+      const serverETag = ensureETag(res.headers);
+      if (serverETag) {
+        this.set(getETagKey(url), serverETag, TTL.ONE_WEEK_STATIC);
+      }
+      // If we do not have a cached value, we ignore 304
+      if (res.status === 304 && typeof previouslyCached === 'string' && previouslyCached.length > 1) {
+        const err = new Custom304NotModifiedError(url, previouslyCached);
+        controller.abort(err);
+        throw err;
+      }
+      if (!serverETag && !this.get(getETagKey(primaryUrl)) && typeof previouslyCached === 'string') {
+        const err = new CustomNoETagFallbackError(previouslyCached);
+        controller.abort(err);
+        throw err;
       }
 
       // either no etag and not cached
       // or has etag but not 304
       const text = await res.text();
+
+      if (text.length < 2) {
+        throw new ResponseError(res, url, 'empty response');
+      }
+
       controller.abort();
       return text;
     };
@@ -370,19 +392,27 @@ export class Cache<S = string> {
 
       return value;
     } catch (e) {
-      if (e instanceof AggregateError) {
+      if (e && typeof e === 'object' && 'errors' in e && Array.isArray(e.errors)) {
         const deserializer = 'deserializer' in opt ? opt.deserializer : identity as any;
 
-        for (const error of e.errors) {
-          if (error instanceof Custom304NotModifiedError) {
-            console.log(picocolors.green('[cache] http 304'), picocolors.gray(primaryUrl));
-            this.updateTtl(cachedKey, TTL.ONE_WEEK_STATIC);
-            return deserializer(error.data);
+        for (let i = 0, len = e.errors.length; i < len; i++) {
+          const error = e.errors[i];
+          if ('name' in error && (error.name === 'CustomAbortError' || error.name === 'AbortError')) {
+            continue;
           }
-          if (error instanceof CustomNoETagFallbackError) {
-            console.log(picocolors.green('[cache] hit'), picocolors.gray(primaryUrl));
-            return deserializer(error.data);
+          if ('digest' in error) {
+            if (error.digest === 'Custom304NotModifiedError') {
+              console.log(picocolors.green('[cache] http 304'), picocolors.gray(primaryUrl));
+              this.updateTtl(cachedKey, TTL.ONE_WEEK_STATIC);
+              return deserializer(error.data);
+            }
+            if (error.digest === 'CustomNoETagFallbackError') {
+              console.log(picocolors.green('[cache] hit'), picocolors.gray(primaryUrl));
+              return deserializer(error.data);
+            }
           }
+
+          console.log(picocolors.red('[fetch error]'), picocolors.gray(error.url), error);
         }
       }
 
