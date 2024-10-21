@@ -31,13 +31,8 @@ const REDIRECT_MIRROR_HEADER = [
   ['gapis.geekzu.org/g-fonts/', 'https://fonts.gstatic.com/'],
   ['gapis.geekzu.org/g-themes/', 'https://themes.googleusercontent.com/'],
   ['sdn.geekzu.org/', 'https://secure.gravatar.com/'],
-  // cravatar
-  ['cravatar.cn/', 'https://secure.gravatar.com/'],
   // libravatar
   ['seccdn.libravatar.org/gravatarproxy/', 'https://secure.gravatar.com/'],
-  // ghproxy
-  ['ghproxy.com/', 'https://'],
-  ['ghps.cc/', 'https://'],
   // gh-proxy
   ['github.moeyy.xyz/', 'https://'],
   // 7ED Services
@@ -53,16 +48,14 @@ const REDIRECT_MIRROR_HEADER = [
   ['cdn.gitmirror.com/', 'https://cdn.statically.io/'],
   // FastGit
   ['raw.fastgit.org/', 'https://raw.githubusercontent.com/'],
-  ['assets.fastgit.org/', 'https://github.githubassets.com/'],
+  // ['assets.fastgit.org/', 'https://github.githubassets.com/'],
   // jsDelivr
   ['fastly.jsdelivr.net/', 'https://cdn.jsdelivr.net/'],
   ['gcore.jsdelivr.net/', 'https://cdn.jsdelivr.net/'],
+  ['testingcf.jsdelivr.net/', 'https://cdn.jsdelivr.net/'],
   // JSDMirror
   ['cdn.jsdmirror.com/', 'https://cdn.jsdelivr.net/'],
   ['cdn.jsdmirror.cn/', 'https://cdn.jsdelivr.net/'],
-  // ops.ci
-  ['jsdelivr.ops.ci/', 'https://cdn.jsdelivr.net/'],
-  ['fonts.ops.ci/', 'https://fonts.googleapis.com/'],
   // onmicrosoft.cn
   ['jsd.onmicrosoft.cn/', 'https://cdn.jsdelivr.net/'],
   ['npm.onmicrosoft.cn/', 'https://unpkg.com/'],
@@ -70,6 +63,19 @@ const REDIRECT_MIRROR_HEADER = [
   // KGitHub
   ['raw.kgithub.com/', 'https://raw.githubusercontent.com/'],
   ['raw.kkgithub.com/', 'https://raw.githubusercontent.com/'],
+  // cdn.iocdn.cc
+  ['cdn.iocdn.cc/avatar/', 'https://secure.gravatar.com/avatar/'],
+  ['cdn.iocdn.cc/css', 'https://fonts.googleapis.com/css'],
+  ['cdn.iocdn.cc/icon', 'https://fonts.googleapis.com/icon'],
+  ['cdn.iocdn.cc/earlyaccess', 'https://fonts.googleapis.com/earlyaccess'],
+  ['cdn.iocdn.cc/s', 'fonts.gstatic.com/s'],
+  ['cdn.iocdn.cc/static', 'themes.googleusercontent.com/static'],
+  ['cdn.iocdn.cc/ajax', 'ajax.googleapis.com/ajax'],
+  ['cdn.iocdn.cc/', 'https://cdn.jsdelivr.net/'],
+  // wp-china-yes
+  ['googlefonts.admincdn.com/', 'https://fonts.googleapis.com/'],
+  ['googleajax.admincdn.com/', 'https://ajax.googleapis.com/'],
+  ['cdnjs.admincdn.com/', 'https://cdnjs.cloudflare.com/ajax/libs/'],
   // Polyfill
   ['polyfill.io/', 'https://cdnjs.cloudflare.com/polyfill/'],
   ['polyfill.top/', 'https://cdnjs.cloudflare.com/polyfill/'],
@@ -79,15 +85,11 @@ const REDIRECT_MIRROR_HEADER = [
   ['fastly-polyfill.net/', 'https://cdnjs.cloudflare.com/polyfill/'],
   // BootCDN has been controlled by a malicious actor and being used to spread malware
   ['cdn.bootcss.com/', 'https://cdnjs.cloudflare.com/ajax/libs/'],
-
   ['cdn.bootcdn.net/', 'https://cdnjs.cloudflare.com/ajax/libs/'],
-  ['cdn.bootcdn.com/', 'https://cdnjs.cloudflare.com/ajax/libs/'],
   ['cdn.staticfile.net/', 'https://cdnjs.cloudflare.com/ajax/libs/'],
   ['cdn.staticfile.org/', 'https://cdnjs.cloudflare.com/ajax/libs/'],
   // Misc
-  ['pics.javbus.com/', 'https://i0.wp.com/pics.javbus.com/'],
-  ['googlefonts.wp-china-yes.net/', 'https://fonts.googleapis.com/'],
-  ['googleajax.wp-china-yes.net/', 'https://ajax.googleapis.com/']
+  ['pics.javbus.com/', 'https://i0.wp.com/pics.javbus.com/']
 ] as const;
 
 const REDIRECT_MIRROR_307 = [
@@ -148,7 +150,7 @@ const REDIRECT_FAKEWEBSITES = [
 export const buildRedirectModule = task(require.main === module, __filename)(async (span) => {
   const domains = Array.from(new Set([
     ...REDIRECT_MIRROR_HEADER.map(([from]) => getHostname(from, { detectIp: false })),
-    ...REDIRECT_FAKEWEBSITES.flatMap(([from]) => [from, `www.${from}`]),
+    ...REDIRECT_FAKEWEBSITES.flatMap(([from]) => [from, `*.${from}`]),
     ...REDIRECT_MIRROR_307.map(([from]) => getHostname(from, { detectIp: false }))
   ])).filter(isTruthy);
 
@@ -156,7 +158,7 @@ export const buildRedirectModule = task(require.main === module, __filename)(asy
     span,
     [
       '#!name=[Sukka] URL Redirect',
-      `#!desc=Last Updated: ${new Date().toISOString()}`,
+      `#!desc=Last Updated: ${new Date().toISOString()} Size: ${domains.length}`,
       '',
       '[MITM]',
       `hostname = %APPEND% ${domains.join(', ')}`,
